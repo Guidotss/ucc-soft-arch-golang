@@ -1,7 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"github.com/Guidotss/ucc-soft-arch-golang.git/config"
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	envs := config.LoadEnvs(".env")
+	r := gin.Default()
+
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	r.Run(":" + envs.Get("PORT"))
 }
