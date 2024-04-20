@@ -5,26 +5,29 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Guidotss/ucc-soft-arch-golang.git/app/routes"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/config"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	// Cargar variables de entorno
 	envs := config.LoadEnvs(".env")
+
+	// Crear un nuevo router
 	router := gin.Default()
 
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	// Llamar a la función que define las rutas de la aplicación
+	routes.AppRoutes(router)
 
-	// Start server
+	// Iniciar el servidor
 	startServer(router, envs)
 }
 
-func startServer(router http.Handler, envs config.Envs) {
+func startServer(router *gin.Engine, envs config.Envs) {
 	serverPort := envs.Get("PORT")
+	router.Use(cors.Default())
 
 	server := &http.Server{
 		Addr:           ":" + serverPort,
@@ -35,7 +38,7 @@ func startServer(router http.Handler, envs config.Envs) {
 	}
 
 	if err := server.ListenAndServe(); err != nil {
-		_ = fmt.Errorf("Error starting server: %v", err)
+		_ = fmt.Errorf("error starting server: %v", err)
 		panic(err)
 	}
 }
