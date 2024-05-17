@@ -14,6 +14,7 @@ import (
 func main() {
 	// Cargar variables de entorno
 	envs := config.LoadEnvs(".env")
+	config.NewConnection((envs.Get("DATABASE_URL")))
 
 	// Crear un nuevo router
 	router := gin.Default()
