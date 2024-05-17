@@ -5,9 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CoursesRoutes(g *gin.RouterGroup /* controller *CoursesController */) {
-	g.Group("/courses")
-	{
-		g.POST("/create", courses.Create)
-	}
+func CoursesRoutes(g *gin.Engine /* controller *CoursesController */) {
+
+	g.POST("/courses/create", courses.Create)
+
 }

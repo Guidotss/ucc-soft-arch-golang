@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Guidotss/ucc-soft-arch-golang.git/app/routes"
+	"github.com/Guidotss/ucc-soft-arch-golang.git/clients/courses"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/config"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,8 @@ import (
 func main() {
 	// Cargar variables de entorno
 	envs := config.LoadEnvs(".env")
-	config.NewConnection((envs.Get("DATABASE_URL")))
+	db := config.NewConnection((envs.Get("DATABASE_URL")))
+	courses.Db = db
 
 	// Crear un nuevo router
 	router := gin.Default()
