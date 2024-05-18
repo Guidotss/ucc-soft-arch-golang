@@ -9,6 +9,6 @@ type Inscriptos struct {
 	CourseId string
 	UserId   string
 
-	User   User   `gorm:"foreignKey:uid"`
-	Course Course `gorm:"foreignKey:cid"`
+	User   User
+	Course Course
 }

@@ -10,5 +10,5 @@ import (
 func AppRoutes(engine *gin.Engine, db *gorm.DB) {
 
 	CoursesRoutes(engine, adapter.CourseAdapter(db))
-
+	/* AuthRoutes(engine, adapter.AuthAdapter(db)) */
 }
