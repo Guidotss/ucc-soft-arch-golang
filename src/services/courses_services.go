@@ -1,22 +1,25 @@
 package services
 
 import (
-	"github.com/Guidotss/ucc-soft-arch-golang.git/clients/courses"
-	dto "github.com/Guidotss/ucc-soft-arch-golang.git/domain/dtos/courses"
-	"github.com/Guidotss/ucc-soft-arch-golang.git/model"
+	"github.com/Guidotss/ucc-soft-arch-golang.git/src/clients/courses"
+	dto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/courses"
+	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
 )
-
-type courseService struct{}
 
 type ICourseService interface {
 	CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.CreateCoursesResponseDto
 }
 
-func NewCourseService() ICourseService {
-	return &courseService{}
+type courseService struct {
+	client courses.CourseClient
+}
+
+func NewCourseService(client *courses.CourseClient) ICourseService {
+	return &courseService{client: *client}
 }
 
 func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.CreateCoursesResponseDto {
+
 	var newCourse = model.Course{
 		CourseName:        courseDto.CourseName,
 		CourseDescription: courseDto.CourseDescription,
@@ -28,16 +31,10 @@ func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.
 		CourseState:       courseDto.CourseState,
 	}
 
-	var createdCourse = courses.Create(newCourse)
+	createdCourse := c.client.Create(newCourse)
 
 	return dto.CreateCoursesResponseDto{
 		CourseName: createdCourse.CourseName,
 		CourseId:   int(createdCourse.ID),
 	}
 }
-
-/*
-func Create(c courses.CreateCoursesRequestDto) *courses.CreateCoursesResponseDto {
-
-}
-*/

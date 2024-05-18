@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Guidotss/ucc-soft-arch-golang.git/app/routes"
-	"github.com/Guidotss/ucc-soft-arch-golang.git/clients/courses"
-	"github.com/Guidotss/ucc-soft-arch-golang.git/config"
+	"github.com/Guidotss/ucc-soft-arch-golang.git/src/config"
+	"github.com/Guidotss/ucc-soft-arch-golang.git/src/routes"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -16,13 +15,12 @@ func main() {
 	// Cargar variables de entorno
 	envs := config.LoadEnvs(".env")
 	db := config.NewConnection((envs.Get("DATABASE_URL")))
-	courses.Db = db
 
 	// Crear un nuevo router
 	router := gin.Default()
 
 	// Llamar a la función que define las rutas de la aplicación
-	routes.AppRoutes(router)
+	routes.AppRoutes(router, db)
 
 	// Iniciar el servidor
 	startServer(router, envs)
