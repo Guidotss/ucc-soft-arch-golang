@@ -8,6 +8,7 @@ import (
 
 type ICategoriesService interface {
 	CreateCategory(categoryDto categoriesDto.CreateCategoryRequestDto) categoriesDto.CreateCategoryResponseDto
+	FindAllCategories() categoriesDto.GetAllCategories
 }
 
 type categoriesService struct {
@@ -29,4 +30,15 @@ func (c *categoriesService) CreateCategory(categoryDto categoriesDto.CreateCateg
 		CategoryId:   createdCategory.Id,
 		CategoryName: createdCategory.CategoryName,
 	}
+}
+func (c *categoriesService) FindAllCategories() categoriesDto.GetAllCategories {
+	var categories model.Categories = c.client.GetAll()
+	var allCartegoriesDto categoriesDto.GetAllCategories
+	for _, result := range categories {
+		var categoryDto categoriesDto.GetAllCategoriesResponseDto
+		categoryDto.CategoryId = result.Id
+		categoryDto.CategoryName = result.CategoryName
+		allCartegoriesDto = append(allCartegoriesDto, categoryDto)
+	}
+	return allCartegoriesDto
 }

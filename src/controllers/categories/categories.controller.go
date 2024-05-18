@@ -29,3 +29,8 @@ func (c *CategoriesController) Create(g *gin.Context) {
 	g.JSON(201, response)
 
 }
+
+func (c *CategoriesController) GetAll(g *gin.Context) {
+	response := c.CategoriesService.FindAllCategories()
+	g.JSON(200, response)
+}

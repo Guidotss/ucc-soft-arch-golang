@@ -7,4 +7,5 @@ import (
 
 func CategoriesRoutes(engine *gin.Engine, controller *categories.CategoriesController) {
 	engine.POST("/category/create", controller.Create)
+	engine.GET("/categories", controller.GetAll)
 }
