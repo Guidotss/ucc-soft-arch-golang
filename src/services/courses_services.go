@@ -35,6 +35,6 @@ func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.
 
 	return dto.CreateCoursesResponseDto{
 		CourseName: createdCourse.CourseName,
-		CourseId:   int(createdCourse.ID),
+		CourseId:   createdCourse.Id,
 	}
 }

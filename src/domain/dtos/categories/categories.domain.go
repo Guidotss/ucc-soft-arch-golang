@@ -1,10 +1,12 @@
 package categories
 
+import "github.com/google/uuid"
+
 type CreateCategoryRequestDto struct {
 	CategoryName string `json:"category_name"`
 }
 
 type CreateCategoryResponseDto struct {
-	CategoryName string `json:"category_name"`
-	CategoryId   string `json:"category_id"`
+	CategoryId   uuid.UUID `json:"category_id"`
+	CategoryName string    `json:"category_name"`
 }

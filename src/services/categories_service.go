@@ -26,7 +26,7 @@ func (c *categoriesService) CreateCategory(categoryDto categoriesDto.CreateCateg
 	createdCategory := c.client.Create(newCategory)
 
 	return categoriesDto.CreateCategoryResponseDto{
-		CategoryName: createdCategory.CategoryName,
 		CategoryId:   createdCategory.Id,
+		CategoryName: createdCategory.CategoryName,
 	}
 }
