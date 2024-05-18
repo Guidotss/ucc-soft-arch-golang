@@ -23,3 +23,9 @@ func (c *CourseClient) Create(course model.Course) model.Course {
 	log.Debug("Curso creado con exito wachin, su id es: ", result)
 	return course
 }
+
+func (c *CourseClient) GetAll() model.Courses {
+	var courses model.Courses
+	c.Db.Find(&courses)
+	return courses
+}

@@ -24,3 +24,5 @@ func (model *Course) BeforeCreate(tx *gorm.DB) (err error) {
 	model.Id = uuid.New()
 	return
 }
+
+type Courses []Course

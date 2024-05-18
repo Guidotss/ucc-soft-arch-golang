@@ -30,3 +30,8 @@ func (c *CourseController) Create(g *gin.Context) {
 	response := c.CourseService.CreateCourse(courseDto)
 	g.JSON(201, response)
 }
+
+func (c *CourseController) GetAll(g *gin.Context) {
+	response := c.CourseService.FindAllCourses()
+	g.JSON(200, response)
+}

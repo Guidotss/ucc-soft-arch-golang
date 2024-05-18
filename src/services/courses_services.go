@@ -8,6 +8,7 @@ import (
 
 type ICourseService interface {
 	CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.CreateCoursesResponseDto
+	FindAllCourses() dto.GetAllCourses
 }
 
 type courseService struct {
@@ -37,4 +38,23 @@ func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.
 		CourseName: createdCourse.CourseName,
 		CourseId:   createdCourse.Id,
 	}
+}
+
+func (c *courseService) FindAllCourses() dto.GetAllCourses {
+	var courses model.Courses = c.client.GetAll()
+	var allCoursesDto dto.GetAllCourses
+	for _, result := range courses {
+		var courseDto dto.GetAllCoursesResponseDto
+		courseDto.Id = result.Id
+		courseDto.CategoryID = result.CategoryID
+		courseDto.CourseName = result.CourseName
+		courseDto.CourseDescription = result.CourseDescription
+		courseDto.CoursePrice = result.CoursePrice
+		courseDto.CourseDuration = result.CourseDuration
+		courseDto.CourseCapacity = result.CourseCapacity
+		courseDto.CourseInitDate = result.CourseInitDate
+		courseDto.CourseState = result.CourseState
+		allCoursesDto = append(allCoursesDto, courseDto)
+	}
+	return allCoursesDto
 }
