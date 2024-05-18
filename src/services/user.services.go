@@ -1,6 +1,6 @@
 package services
 
-import "github.com/Guidotss/ucc-soft-arch-golang.git/domain/dtos/auth"
+import "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/auth"
 
 func LoginService(auth.LoginRequest) *auth.LoginResponse {
 	return &auth.LoginResponse{

@@ -1,15 +1,17 @@
 package courses
 
-type CoursesCreateRequest struct {
+type CreateCoursesRequestDto struct {
 	CourseName        string  `json:"course_name"`
 	CourseDescription string  `json:"course_description"`
 	CoursePrice       float64 `json:"course_price"`
 	CourseDuration    int     `json:"course_duration"`
-	CourseImage       string  `json:"course_image"`
+	CourseCapacity    int     `json:"course_capacity"`
+	CategoryID        string  `json:"category_id"`
+	CourseInitDate    string  `json:"init_date"`
+	CourseState       bool    `json:"state"`
 }
 
-type CoursesCreateResponse struct {
+type CreateCoursesResponseDto struct {
 	CourseName string `json:"course_name"`
-	Message    string `json:"message"`
 	CourseId   int    `json:"course_id"`
 }

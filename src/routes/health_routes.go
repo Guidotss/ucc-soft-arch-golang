@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/Guidotss/ucc-soft-arch-golang.git/controllers"
+	"github.com/Guidotss/ucc-soft-arch-golang.git/src/controllers"
 	"github.com/gin-gonic/gin"
 )
 
