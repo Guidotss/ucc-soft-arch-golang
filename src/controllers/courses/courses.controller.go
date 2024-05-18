@@ -28,5 +28,5 @@ func (c *CourseController) Create(g *gin.Context) {
 	}
 
 	response := c.CourseService.CreateCourse(courseDto)
-	g.JSON(200, response)
+	g.JSON(201, response)
 }
