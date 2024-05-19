@@ -11,5 +11,6 @@ func AppRoutes(engine *gin.Engine, db *gorm.DB) {
 
 	CoursesRoutes(engine, adapter.CourseAdapter(db))
 	CategoriesRoutes(engine, adapter.CategoryAdapter(db))
-	/* AuthRoutes(engine, adapter.AuthAdapter(db)) */
+	UsersRoutes(engine, adapter.UserAdapter(db))
+	AuthRoutes(engine, adapter.AuthAdapter(db))
 }

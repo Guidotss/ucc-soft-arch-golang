@@ -13,9 +13,9 @@ type Course struct {
 	CoursePrice       float64   `gorm:"price"`
 	CourseDuration    int       `gorm:"duration"`
 	CourseInitDate    string    `gorm:"init_date"`
-	CourseState       bool      `gorm:"state"`
-	CourseCapacity    int       `gorm:"cupo"`
-	CourseImage       string    `gorm:"image"`
+	CourseState       bool      `gorm:"state;default:false"`
+	CourseCapacity    int       `gorm:"cupo;default:15"`
+	CourseImage       string    `gorm:"image;default:https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"`
 	CategoryID        uuid.UUID
 	Category          Category
 }
@@ -24,3 +24,5 @@ func (model *Course) BeforeCreate(tx *gorm.DB) (err error) {
 	model.Id = uuid.New()
 	return
 }
+
+type Courses []Course

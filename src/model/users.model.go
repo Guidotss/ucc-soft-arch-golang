@@ -10,9 +10,9 @@ type User struct {
 	Id       uuid.UUID `sql:"type:uuid;primary_key;default:gen_random_uuid()"`
 	Password string    `gorm:"password"`
 	Email    string    `gorm:"email"`
-	Role     int       `gorm:"role"`
+	Role     int       `gorm:"role;default:0"`
 	Name     string    `gorm:"user_name"`
-	Avatar   string    `gorm:"avatar"`
+	Avatar   string    `gorm:"avatar;default:https://i.postimg.cc/wTgNFWhR/profile.png"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {

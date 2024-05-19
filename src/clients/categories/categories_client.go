@@ -23,3 +23,9 @@ func (c *CategoriesClient) Create(category model.Category) model.Category {
 	log.Debug("Categoria creado con exito wachin, su id es: ", result)
 	return category
 }
+
+func (c *CategoriesClient) GetAll() model.Categories {
+	var categories model.Categories
+	c.Db.Find(&categories)
+	return categories
+}

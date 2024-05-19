@@ -1,14 +1,11 @@
 package routes
 
 import (
+	controller "github.com/Guidotss/ucc-soft-arch-golang.git/src/controllers/auth"
 	"github.com/gin-gonic/gin"
 )
 
-// AuthRoutes es la función que se encarga de definir las rutas de autenticación
-func AuthRoutes(g *gin.RouterGroup /* controller *AuthController */) {
-	// TODO: Implementar las rutas de autenticación
-	g.Group("/auth")
-	{
-
-	}
+func AuthRoutes(engine *gin.Engine, controller *controller.AuthController) {
+	engine.POST("/auth/refresh-token", controller.RefreshToken)
+	engine.POST("/auth/login", controller.Login)
 }

@@ -1,10 +1,12 @@
 package courses
 
 import (
+	"net/http"
+
 	coursesDomain "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/courses"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/services"
-
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type CourseController struct {
@@ -29,4 +31,20 @@ func (c *CourseController) Create(g *gin.Context) {
 
 	response := c.CourseService.CreateCourse(courseDto)
 	g.JSON(201, response)
+}
+
+func (c *CourseController) GetAll(g *gin.Context) {
+	response := c.CourseService.FindAllCourses()
+	g.JSON(200, response)
+}
+
+func (c *CourseController) GetById(g *gin.Context) {
+	id := g.Param("id")
+	uuid, err := uuid.Parse(id)
+	response := c.CourseService.FindOneCourse(uuid)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID format"})
+		return
+	}
+	g.JSON(200, response)
 }
