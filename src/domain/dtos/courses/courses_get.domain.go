@@ -2,7 +2,7 @@ package courses
 
 import "github.com/google/uuid"
 
-type GetAllCoursesResponseDto struct {
+type GetCourseDto struct {
 	Id                uuid.UUID `json:"id"`
 	CategoryID        uuid.UUID `json:"category_id"`
 	CourseName        string    `json:"course_name"`
@@ -14,4 +14,4 @@ type GetAllCoursesResponseDto struct {
 	CourseState       bool      `json:"state"`
 }
 
-type GetAllCourses []GetAllCoursesResponseDto
+type GetAllCourses []GetCourseDto

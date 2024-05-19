@@ -2,6 +2,7 @@ package courses
 
 import (
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -28,4 +29,10 @@ func (c *CourseClient) GetAll() model.Courses {
 	var courses model.Courses
 	c.Db.Find(&courses)
 	return courses
+}
+
+func (c *CourseClient) GetById(id uuid.UUID) model.Course {
+	var course model.Course
+	c.Db.Where("id = ?", id).First(&course)
+	return course
 }
