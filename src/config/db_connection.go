@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 
-	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,7 +15,7 @@ func NewConnection(dsn string) *gorm.DB {
 
 	fmt.Println("Connection Opened to Database")
 
-	db.AutoMigrate(model.User{}, model.Course{}, model.Categories{}, model.Inscriptos{})
+	//db.AutoMigrate(model.User{}, model.Course{}, model.Categories{}, model.Inscriptos{})
 
 	return db
 	// defer db.Close()
