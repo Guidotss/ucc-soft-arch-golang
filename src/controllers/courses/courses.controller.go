@@ -13,10 +13,6 @@ type CourseController struct {
 	CourseService services.ICourseService
 }
 
-type ICourseController interface {
-	Create(g *gin.Context)
-}
-
 func NewCourseController(service services.ICourseService) *CourseController {
 	return &CourseController{CourseService: service}
 }
@@ -43,7 +39,7 @@ func (c *CourseController) GetById(g *gin.Context) {
 	uuid, err := uuid.Parse(id)
 	response := c.CourseService.FindOneCourse(uuid)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID format"})
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
 		return
 	}
 	g.JSON(200, response)
