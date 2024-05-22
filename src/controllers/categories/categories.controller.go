@@ -27,7 +27,6 @@ func (c *CategoriesController) Create(g *gin.Context) {
 	}
 	response := c.CategoriesService.CreateCategory(categoryDto)
 	g.JSON(201, response)
-
 }
 
 func (c *CategoriesController) GetAll(g *gin.Context) {
