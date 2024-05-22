@@ -33,3 +33,12 @@ func (c *InscriptosClient) GetMyCourses(id uuid.UUID) model.MyCourses {
 	}
 	return courses
 }
+func (c *InscriptosClient) GetMyStudents(id uuid.UUID) model.StudentsInCourse {
+	var inscriptos []model.Inscripto
+	c.Db.Where("course_id = ?", id).Find(&inscriptos)
+	var students model.StudentsInCourse
+	for _, inscripto := range inscriptos {
+		students = append(students, inscripto.UserId)
+	}
+	return students
+}

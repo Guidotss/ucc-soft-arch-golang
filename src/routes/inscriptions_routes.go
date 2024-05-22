@@ -9,4 +9,5 @@ func InscriptionsRoutes(g *gin.Engine, controller *controller.InscriptionControl
 
 	g.POST("/enroll", controller.Create)
 	g.GET("/myCourses/:id", controller.GetMyCourses)
+	g.GET("/studentsInThisCourse/:id", controller.GetMyStudents)
 }

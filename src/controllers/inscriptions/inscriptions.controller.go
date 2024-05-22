@@ -41,5 +41,14 @@ func (c *InscriptionController) GetMyCourses(g *gin.Context) {
 	}
 	response := c.InscriptionService.GetMyCourses(uuid)
 	g.JSON(200, response)
-
+}
+func (c *InscriptionController) GetMyStudents(g *gin.Context) {
+	id := g.Param("id")
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
+		return
+	}
+	response := c.InscriptionService.GetMyStudents(uuid)
+	g.JSON(200, response)
 }

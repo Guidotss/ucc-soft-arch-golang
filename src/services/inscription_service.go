@@ -10,6 +10,7 @@ import (
 type IInscriptionService interface {
 	Enroll(dto.EnrollRequestResponseDto) dto.EnrollRequestResponseDto
 	GetMyCourses(uuid.UUID) dto.MyCoursesDto
+	GetMyStudents(uuid.UUID) dto.StudentsInCourse
 }
 
 type inscriptionService struct {
@@ -42,4 +43,14 @@ func (c *inscriptionService) GetMyCourses(id uuid.UUID) dto.MyCoursesDto {
 		coursesDto = append(coursesDto, courseDto)
 	}
 	return coursesDto
+}
+func (c *inscriptionService) GetMyStudents(id uuid.UUID) dto.StudentsInCourse {
+	students := c.client.GetMyStudents(id)
+	var studentsDto dto.StudentsInCourse
+	for _, student := range students {
+		var studentDto dto.Student
+		studentDto.UserId = student
+		studentsDto = append(studentsDto, studentDto)
+	}
+	return studentsDto
 }
