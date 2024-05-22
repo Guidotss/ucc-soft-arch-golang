@@ -8,5 +8,5 @@ import (
 func InscriptionsRoutes(g *gin.Engine, controller *controller.InscriptionController) {
 
 	g.POST("/enroll", controller.Create)
-
+	g.GET("/myCourses/:id", controller.GetMyCourses)
 }

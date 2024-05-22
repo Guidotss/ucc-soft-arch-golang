@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Inscriptos struct {
+type Inscripto struct {
 	gorm.Model
 	CourseId uuid.UUID
 	UserId   uuid.UUID
@@ -13,3 +13,6 @@ type Inscriptos struct {
 	User   User
 	Course Course
 }
+
+type StudentsInCourse []uuid.UUID
+type MyCourses []uuid.UUID

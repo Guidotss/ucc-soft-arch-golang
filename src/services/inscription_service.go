@@ -4,10 +4,12 @@ import (
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/clients/inscriptos"
 	dto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/inscription"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
+	"github.com/google/uuid"
 )
 
 type IInscriptionService interface {
 	Enroll(dto.EnrollRequestResponseDto) dto.EnrollRequestResponseDto
+	GetMyCourses(uuid.UUID) dto.MyCoursesDto
 }
 
 type inscriptionService struct {
@@ -19,7 +21,7 @@ func NewInscriptionService(client *inscriptos.InscriptosClient) IInscriptionServ
 }
 
 func (c *inscriptionService) Enroll(data dto.EnrollRequestResponseDto) dto.EnrollRequestResponseDto {
-	var newEnroll = model.Inscriptos{
+	var newEnroll = model.Inscripto{
 		CourseId: data.CourseId,
 		UserId:   data.UserId,
 	}
@@ -29,4 +31,15 @@ func (c *inscriptionService) Enroll(data dto.EnrollRequestResponseDto) dto.Enrol
 		CourseId: enroll.CourseId,
 		UserId:   enroll.UserId,
 	}
+}
+
+func (c *inscriptionService) GetMyCourses(id uuid.UUID) dto.MyCoursesDto {
+	courses := c.client.GetMyCourses(id)
+	var coursesDto dto.MyCoursesDto
+	for _, course := range courses {
+		var courseDto dto.Course
+		courseDto.CourseId = course
+		coursesDto = append(coursesDto, courseDto)
+	}
+	return coursesDto
 }
