@@ -33,7 +33,7 @@ func (c *InscriptionController) Create(g *gin.Context) {
 }
 
 func (c *InscriptionController) GetMyCourses(g *gin.Context) {
-	id := g.Param("id")
+	id := g.Param("uid")
 	uuid, err := uuid.Parse(id)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
@@ -43,7 +43,7 @@ func (c *InscriptionController) GetMyCourses(g *gin.Context) {
 	g.JSON(200, response)
 }
 func (c *InscriptionController) GetMyStudents(g *gin.Context) {
-	id := g.Param("id")
+	id := g.Param("cid")
 	uuid, err := uuid.Parse(id)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
