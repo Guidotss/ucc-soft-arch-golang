@@ -11,6 +11,7 @@ type ICourseService interface {
 	CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.CreateCoursesResponseDto
 	FindAllCourses() dto.GetAllCourses
 	FindOneCourse(id uuid.UUID) dto.GetCourseDto
+	UpdateCourse(dto dto.UpdateRequestDto) dto.UpdateResponseDto
 }
 
 type courseService struct {
@@ -78,4 +79,20 @@ func (c *courseService) FindOneCourse(id uuid.UUID) dto.GetCourseDto {
 	courseDto.CourseState = result.CourseState
 
 	return courseDto
+}
+
+func (c *courseService) UpdateCourse(newData dto.UpdateRequestDto) dto.UpdateResponseDto {
+	var responseDto dto.UpdateResponseDto
+	result := c.client.UpdateCourse(newData)
+	responseDto.Id = result.Id
+	responseDto.CategoryID = result.CategoryID
+	responseDto.CourseName = result.CourseName
+	responseDto.CourseDescription = result.CourseDescription
+	responseDto.CoursePrice = result.CoursePrice
+	responseDto.CourseDuration = result.CourseDuration
+	responseDto.CourseCapacity = result.CourseCapacity
+	responseDto.CourseInitDate = result.CourseInitDate
+	responseDto.CourseState = result.CourseState
+
+	return responseDto
 }

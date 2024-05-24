@@ -31,11 +31,30 @@ func (u *UsersController) CreateUser(g *gin.Context) {
 	}
 
 	response := u.service.CreateUser(users)
-	token := jwt.SignDocument(response.Id)
+	token := jwt.SignDocument(response.Id, response.Role)
 	g.JSON(201, gin.H{
 		"ok":      true,
 		"message": "User created successfully",
 		"data":    response,
 		"token":   token,
+	})
+}
+
+func (u *UsersController) UpdateUser(g *gin.Context) {
+	var user users.UpdateRequestDto
+	err := g.BindJSON(&user)
+	if err != nil {
+		g.JSON(400, gin.H{
+			"Ok":    false,
+			"error": err.Error(),
+		})
+		return
+	}
+
+	response := u.service.UpdateUser(user)
+	g.JSON(201, gin.H{
+		"ok":      true,
+		"message": "User updated successfully",
+		"data":    response,
 	})
 }

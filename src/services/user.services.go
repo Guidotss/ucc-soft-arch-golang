@@ -16,6 +16,7 @@ type IUserService interface {
 	CreateUser(user userDomain.RegisterRequest) userDomain.RegisterResponse
 	GetUserById(id uuid.UUID) userDomain.GetUserDto
 	GetUserByEmail(email string) userDomain.GetUserDto
+	UpdateUser(dto userDomain.UpdateRequestDto) userDomain.UpdateResponseDto
 }
 
 func NewUserService(client *users.UsersClient) IUserService {
@@ -66,5 +67,16 @@ func (u *UserService) GetUserByEmail(email string) userDomain.GetUserDto {
 		Role:     user.Role,
 		UserName: user.Name,
 		Avatar:   user.Avatar,
+	}
+}
+func (u *UserService) UpdateUser(dto userDomain.UpdateRequestDto) userDomain.UpdateResponseDto {
+	user := u.client.UpdateUser(dto)
+
+	return userDomain.UpdateResponseDto{
+		Id:       user.Id,
+		Username: user.Name,
+		Email:    user.Email,
+		Avatar:   user.Avatar,
+		Role:     user.Role,
 	}
 }

@@ -7,4 +7,5 @@ import (
 
 func UsersRoutes(engine *gin.Engine, controller *users.UsersController) {
 	engine.POST("/users/register", controller.CreateUser)
+	engine.PUT("/users/update", controller.UpdateUser)
 }
