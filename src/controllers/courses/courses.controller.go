@@ -54,5 +54,9 @@ func (c *CourseController) UpdateCourse(g *gin.Context) {
 	}
 
 	response := c.CourseService.UpdateCourse(courseDto)
-	g.JSON(200, response)
+	g.JSON(201, gin.H{
+		"ok":      true,
+		"message": "Course updated successfully",
+		"data":    response,
+	})
 }
