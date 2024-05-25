@@ -31,6 +31,8 @@ func (a *AuthController) RefreshToken(c *gin.Context) {
 
 	user, token := a.service.RefreshToken(authorization)
 
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Content-Type", "application/json")
 	c.JSON(200, gin.H{
 		"ok":      true,
 		"message": "Token refreshed",
