@@ -57,6 +57,8 @@ func (c *courseService) FindAllCourses() dto.GetAllCourses {
 		courseDto.CourseCapacity = result.CourseCapacity
 		courseDto.CourseInitDate = result.CourseInitDate
 		courseDto.CourseState = result.CourseState
+		courseDto.CourseImage = result.CourseImage
+
 		allCoursesDto = append(allCoursesDto, courseDto)
 	}
 	return allCoursesDto
