@@ -33,6 +33,7 @@ func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.
 		CategoryID:        courseDto.CategoryID,
 		CourseInitDate:    courseDto.CourseInitDate,
 		CourseState:       courseDto.CourseState,
+		CourseImage:       courseDto.CourseImage,
 	}
 
 	createdCourse := c.client.Create(newCourse)

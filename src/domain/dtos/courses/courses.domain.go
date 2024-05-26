@@ -11,6 +11,7 @@ type CreateCoursesRequestDto struct {
 	CategoryID        uuid.UUID `json:"category_id"`
 	CourseInitDate    string    `json:"init_date"`
 	CourseState       bool      `json:"state"`
+	CourseImage       string    `json:"image"`
 }
 
 type CreateCoursesResponseDto struct {

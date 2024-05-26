@@ -1,6 +1,8 @@
 package users
 
 import (
+	"fmt"
+
 	dto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/users"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
 	"github.com/google/uuid"
@@ -34,10 +36,13 @@ func (u *UsersClient) FindById(id uuid.UUID) model.User {
 
 func (u *UsersClient) FindByEmail(email string) model.User {
 	var user model.User
-	result := u.Db.First(&user, "email = ?", email)
+	fmt.Println("email: ", email)
+	result := u.Db.Where("email = ?", email).First(&user)
 	if result.Error != nil {
+		fmt.Println("error en el result")
 		panic(result.Error)
 	}
+	fmt.Println("Result: ", user)
 	return user
 }
 

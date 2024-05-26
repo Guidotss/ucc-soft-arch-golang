@@ -1,4 +1,4 @@
-package middleware
+package user
 
 import (
 	"fmt"
@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/config"
-	utilsJWT "github.com/Guidotss/ucc-soft-arch-golang.git/src/utils/jwt" // Asegúrate de importar correctamente tu paquete jwt con tus CustomClaims
+	utilsJWT "github.com/Guidotss/ucc-soft-arch-golang.git/src/utils/jwt"
 	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt"
 )
 
-// AuthMiddleware verifica el token JWT y el rol del usuario
+// AuthMiddleware verifica el token JWT
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
@@ -51,13 +51,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		if claims.Role == 0 {
-			c.JSON(http.StatusForbidden, gin.H{"error": "You don't have permission to access this resource"})
-			c.Abort()
-			return
-		}
-
-		//c.Set("userID", claims.Id)
+		c.Set("userID", claims.Id)
 		c.Next()
 	}
 }

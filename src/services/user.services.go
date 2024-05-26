@@ -70,6 +70,13 @@ func (u *UserService) GetUserByEmail(email string) userDomain.GetUserDto {
 	}
 }
 func (u *UserService) UpdateUser(dto userDomain.UpdateRequestDto) userDomain.UpdateResponseDto {
+	if dto.Password != "" {
+		hassedPassword, err := bcrypt.HasPassword(dto.Password)
+		if err != nil {
+			panic(err)
+		}
+		dto.Password = hassedPassword
+	}
 	user := u.client.UpdateUser(dto)
 
 	return userDomain.UpdateResponseDto{
