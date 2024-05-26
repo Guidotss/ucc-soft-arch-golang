@@ -35,7 +35,8 @@ func (a *AuthService) RefreshToken(token string) (users.GetUserDto, string) {
 	}
 	fmt.Println(claims)
 	id, err := uuid.Parse(claims["id"].(string))
-	role := claims["Role"].(int)
+	roleInterface := claims["role"].(float64)
+	role := int(roleInterface)
 	if err != nil {
 		panic(err)
 	}
