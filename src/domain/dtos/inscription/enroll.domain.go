@@ -12,6 +12,9 @@ type Student struct {
 type Course struct {
 	CourseId uuid.UUID `json:"course_id"`
 }
+type CourseIdString struct {
+	CourseId string `json:"course_id"`
+}
 
 type MyCoursesDto []Course
 type StudentsInCourse []Student

@@ -1,6 +1,7 @@
 package inscriptions
 
 import (
+	"fmt"
 	"net/http"
 
 	dto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/inscription"
@@ -19,11 +20,24 @@ func NewInscriptionController(service services.IInscriptionService) *Inscription
 
 func (c *InscriptionController) Create(g *gin.Context) {
 	var enrollDto dto.EnrollRequestResponseDto
-	err := g.BindJSON(&enrollDto)
-	if err != nil {
-		g.JSON(400, gin.H{"error": err.Error()})
+	userID, exists := g.Get("userID")
+	if !exists {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "User ID not found"})
 		return
 	}
+	courseID, exists := g.Get("courseID")
+	if !exists {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Course ID not found"})
+		return
+	}
+	uid := userID.(uuid.UUID)
+	cid, err := uuid.Parse(courseID.(string))
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid Course ID"})
+		return
+	}
+	enrollDto.UserId = uid
+	enrollDto.CourseId = cid
 
 	response := c.InscriptionService.Enroll(enrollDto)
 	g.JSON(201, gin.H{
@@ -33,13 +47,13 @@ func (c *InscriptionController) Create(g *gin.Context) {
 }
 
 func (c *InscriptionController) GetMyCourses(g *gin.Context) {
-	id := g.Param("uid")
-	uuid, err := uuid.Parse(id)
-	if err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
+	userID, exists := g.Get("userID")
+	if !exists {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "User ID not found"})
 		return
 	}
-	response := c.InscriptionService.GetMyCourses(uuid)
+	id := userID.(uuid.UUID)
+	response := c.InscriptionService.GetMyCourses(id)
 	g.JSON(200, response)
 }
 func (c *InscriptionController) GetMyStudents(g *gin.Context) {
@@ -51,4 +65,16 @@ func (c *InscriptionController) GetMyStudents(g *gin.Context) {
 	}
 	response := c.InscriptionService.GetMyStudents(uuid)
 	g.JSON(200, response)
+}
+
+// MIDDLEWARE FUNC
+func (c *InscriptionController) IsAlredyEnrolled(user_id uuid.UUID, course_id uuid.UUID) bool {
+	flag, _ := c.InscriptionService.IsUserEnrolled(user_id, course_id)
+	fmt.Println("controller enrolled flag: ", flag)
+	return flag
+}
+func (c *InscriptionController) CourseExist(course_id uuid.UUID) bool {
+	flag, _ := c.InscriptionService.CourseExist(course_id)
+	fmt.Println("controller existcourse flag: ", flag)
+	return flag
 }

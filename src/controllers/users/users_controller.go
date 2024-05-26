@@ -14,11 +14,6 @@ type UsersController struct {
 	service services.IUserService
 }
 
-type IUserController interface {
-	CreateUser(g *gin.Context)
-	FindByEmail(email string) users.GetUserDto
-}
-
 func NewUserController(service services.IUserService) *UsersController {
 	return &UsersController{service: service}
 }

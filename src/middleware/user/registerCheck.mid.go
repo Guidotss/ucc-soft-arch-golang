@@ -16,7 +16,7 @@ func RegisterMiddleware(controller controller.UsersController) gin.HandlerFunc {
 		if err != nil {
 			c.JSON(400, gin.H{
 				"Ok":    false,
-				"error": err.Error(),
+				"error": "Invalid request",
 			})
 			c.Abort()
 			return
