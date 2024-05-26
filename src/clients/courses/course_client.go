@@ -69,6 +69,9 @@ func (c *CourseClient) UpdateCourse(dto dto.UpdateRequestDto) model.Course {
 	if dto.CourseState != nil {
 		course.CourseState = *dto.CourseState
 	}
+	if dto.CourseImage != nil {
+		course.CourseImage = *dto.CourseImage
+	}
 	result = c.Db.Save(&course)
 	if result.Error != nil {
 		//manejo de errores

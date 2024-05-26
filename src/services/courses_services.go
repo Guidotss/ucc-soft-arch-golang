@@ -96,6 +96,7 @@ func (c *courseService) UpdateCourse(newData dto.UpdateRequestDto) dto.UpdateRes
 	responseDto.CourseCapacity = result.CourseCapacity
 	responseDto.CourseInitDate = result.CourseInitDate
 	responseDto.CourseState = result.CourseState
+	responseDto.CourseImage = result.CourseImage
 
 	return responseDto
 }

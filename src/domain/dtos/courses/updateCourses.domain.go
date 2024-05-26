@@ -12,6 +12,7 @@ type UpdateRequestDto struct {
 	CategoryID        *uuid.UUID `json:"category_id"`
 	CourseInitDate    *string    `json:"init_date"`
 	CourseState       *bool      `json:"state"`
+	CourseImage       *string    `json:"image"`
 }
 type UpdateResponseDto struct {
 	Id                uuid.UUID `json:"id"`
@@ -23,4 +24,5 @@ type UpdateResponseDto struct {
 	CategoryID        uuid.UUID `json:"category_id"`
 	CourseInitDate    string    `json:"init_date"`
 	CourseState       bool      `json:"state"`
+	CourseImage       string    `json:"image"`
 }
