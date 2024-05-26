@@ -80,6 +80,7 @@ func (c *courseService) FindOneCourse(id uuid.UUID) dto.GetCourseDto {
 	courseDto.CourseCapacity = result.CourseCapacity
 	courseDto.CourseInitDate = result.CourseInitDate
 	courseDto.CourseState = result.CourseState
+	courseDto.CourseImage = result.CourseImage
 
 	return courseDto
 }
