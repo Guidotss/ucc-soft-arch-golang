@@ -32,4 +32,5 @@ type GetOneCourseResponseDto struct {
 	CourseCapacity    int       `json:"capacity"`
 	CourseInitDate    string    `json:"init_date"`
 	CourseState       bool      `json:"state"`
+	CourseImage       string    `json:"image"`
 }
