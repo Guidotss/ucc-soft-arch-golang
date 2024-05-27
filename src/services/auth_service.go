@@ -35,6 +35,8 @@ func (a *AuthService) RefreshToken(token string) (users.GetUserDto, string) {
 	}
 	fmt.Println(claims)
 	id, err := uuid.Parse(claims["id"].(string))
+	roleInterface := claims["role"].(float64)
+	role := int(roleInterface)
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +47,7 @@ func (a *AuthService) RefreshToken(token string) (users.GetUserDto, string) {
 		panic("User not found")
 	}
 
-	newToken := jwt.SignDocument(id)
+	newToken := jwt.SignDocument(id, role)
 
 	return checkUser, newToken
 }
@@ -61,7 +63,7 @@ func (a *AuthService) Login(loginDto users.LoginRequestDto) (users.GetUserDto, s
 		panic("Invalid password")
 	}
 
-	newToken := jwt.SignDocument(user.Id)
+	newToken := jwt.SignDocument(user.Id, user.Role)
 
 	var userDto = users.GetUserDto{
 		Id:       user.Id,
