@@ -7,6 +7,6 @@ import (
 )
 
 func UsersRoutes(engine *gin.Engine, controller *users.UsersController) {
-	engine.POST("/users/register", user.RegisterMiddleware(*controller), controller.CreateUser)
+	engine.POST("/users/register", user.RegisterMiddleware(), controller.CreateUser)
 	engine.PUT("/users/update", user.AuthMiddleware(), controller.UpdateUser)
 }

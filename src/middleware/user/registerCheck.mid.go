@@ -1,7 +1,6 @@
 package user
 
 import (
-	controller "github.com/Guidotss/ucc-soft-arch-golang.git/src/controllers/users"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/users"
 
 	//"github.com/Guidotss/ucc-soft-arch-golang.git/src/services"
@@ -9,7 +8,7 @@ import (
 )
 
 // AuthMiddleware verifica el token JWT
-func RegisterMiddleware(controller controller.UsersController) gin.HandlerFunc {
+func RegisterMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user users.RegisterRequest
 		err := c.BindJSON(&user)
@@ -25,15 +24,6 @@ func RegisterMiddleware(controller controller.UsersController) gin.HandlerFunc {
 			c.JSON(400, gin.H{
 				"Ok":    false,
 				"error": "All fields are required",
-			})
-			c.Abort()
-			return
-		}
-		result := controller.FindByEmail(user.Email)
-		if result.Email != "" {
-			c.JSON(400, gin.H{
-				"Ok":    false,
-				"error": "Email already exists",
 			})
 			c.Abort()
 			return
