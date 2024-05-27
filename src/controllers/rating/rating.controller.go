@@ -16,6 +16,12 @@ func NewRatingController(service services.IRatingService) *RatingController {
 
 func (c *RatingController) NewRating(g *gin.Context) {
 	var ratingDto dto.RatingRequestResponseDto
+	if err := g.ShouldBindJSON(&ratingDto); err != nil {
+		g.JSON(400, gin.H{
+			"message": "La estructura del json es incorrecta",
+		})
+		return
+	}
 
 	response := c.RatingService.NewRating(ratingDto)
 	g.JSON(201, gin.H{

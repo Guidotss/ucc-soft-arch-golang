@@ -1,6 +1,8 @@
 package user
 
 import (
+	"fmt"
+
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/users"
 
 	//"github.com/Guidotss/ucc-soft-arch-golang.git/src/services"
@@ -10,8 +12,10 @@ import (
 // AuthMiddleware verifica el token JWT
 func RegisterMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		fmt.Println("Entro al middleware")
 		var user users.RegisterRequest
 		err := c.BindJSON(&user)
+		fmt.Println("UserRequest: ", user)
 		if err != nil {
 			c.JSON(400, gin.H{
 				"Ok":    false,
@@ -28,6 +32,10 @@ func RegisterMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		fmt.Println("Paso register middleware")
+		c.Set("Username", user.Username)
+		c.Set("Email", user.Email)
+		c.Set("Password", user.Password)
 		c.Next()
 	}
 }

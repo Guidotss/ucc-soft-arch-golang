@@ -3,9 +3,9 @@ package users
 import "github.com/google/uuid"
 
 type RegisterRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"Username"`
+	Email    string `json:"Email"`
+	Password string `json:"Password"`
 	Avatar   string `json:"avatar"`
 }
 

@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/users"
@@ -23,22 +24,33 @@ func (u *UsersController) FindByEmail(email string) users.GetUserDto {
 }
 
 func (u *UsersController) CreateUser(g *gin.Context) {
-	var users users.RegisterRequest
-	err := g.BindJSON(&users)
-	if err != nil {
-		g.JSON(400, gin.H{
-			"Ok":    false,
-			"error": err.Error(),
-		})
+	userEmail, exist := g.Get("Email")
+	if !exist {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Email not found"})
 		return
 	}
+	userName, exist := g.Get("Username")
+	if !exist {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Email not found"})
+		return
+	}
+	userPassword, exist := g.Get("Password")
+	if !exist {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Email not found"})
+		return
+	}
+	var user users.RegisterRequest
+	user.Email = userEmail.(string)
+	user.Username = userName.(string)
+	user.Password = userPassword.(string)
+	fmt.Println("UserRequest: ", user)
 
-	response := u.service.CreateUser(users)
+	response := u.service.CreateUser(user)
 	token := jwt.SignDocument(response.Id, response.Role)
 	g.JSON(201, gin.H{
 		"ok":      true,
 		"message": "User created successfully",
-		"data":    response,
+		"user":    response,
 		"token":   token,
 	})
 }
