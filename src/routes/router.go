@@ -14,4 +14,5 @@ func AppRoutes(engine *gin.Engine, db *gorm.DB) {
 	UsersRoutes(engine, adapter.UserAdapter(db))
 	AuthRoutes(engine, adapter.AuthAdapter(db))
 	InscriptionsRoutes(engine, adapter.InscriptionsAdapter(db))
+	RatingRoutes(engine, adapter.RatingAdapter(db))
 }
