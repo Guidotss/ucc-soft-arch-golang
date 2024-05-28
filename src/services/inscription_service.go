@@ -11,6 +11,8 @@ type IInscriptionService interface {
 	Enroll(dto.EnrollRequestResponseDto) dto.EnrollRequestResponseDto
 	GetMyCourses(uuid.UUID) dto.MyCoursesDto
 	GetMyStudents(uuid.UUID) dto.StudentsInCourse
+	IsUserEnrolled(userID uuid.UUID, courseID uuid.UUID) (bool, error)
+	CourseExist(course_id uuid.UUID) (bool, error)
 }
 
 type inscriptionService struct {
@@ -53,4 +55,11 @@ func (c *inscriptionService) GetMyStudents(id uuid.UUID) dto.StudentsInCourse {
 		studentsDto = append(studentsDto, studentDto)
 	}
 	return studentsDto
+}
+
+func (c *inscriptionService) IsUserEnrolled(userID uuid.UUID, courseID uuid.UUID) (bool, error) {
+	return c.client.IsUserEnrolled(userID, courseID)
+}
+func (c *inscriptionService) CourseExist(course_id uuid.UUID) (bool, error) {
+	return c.client.CourseExist(course_id)
 }

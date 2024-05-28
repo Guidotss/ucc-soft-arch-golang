@@ -17,9 +17,18 @@ func main() {
 	db := config.NewConnection((envs.Get("DATABASE_URL")))
 
 	// Crear un nuevo router
-	router := gin.Default()
 
 	// Llamar a la función que define las rutas de la aplicación
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowMethods = []string{"POST", "GET", "PUT", "OPTIONS", "DELETE"}
+	corsConfig.AllowHeaders = []string{"Content-Type", "Authorization"}
+	corsConfig.ExposeHeaders = []string{"Content-Length"}
+	corsConfig.AllowCredentials = true
+	corsConfig.MaxAge = 12 * time.Hour
+
+	router := gin.Default()
+	router.Use(cors.New(corsConfig))
 	routes.AppRoutes(router, db)
 
 	// Iniciar el servidor
@@ -28,7 +37,6 @@ func main() {
 
 func startServer(router *gin.Engine, envs config.Envs) {
 	serverPort := envs.Get("PORT")
-	router.Use(cors.Default())
 
 	server := &http.Server{
 		Addr:           ":" + serverPort,

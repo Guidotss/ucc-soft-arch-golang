@@ -1,6 +1,8 @@
 package inscriptos
 
 import (
+	"fmt"
+
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -41,4 +43,28 @@ func (c *InscriptosClient) GetMyStudents(id uuid.UUID) model.StudentsInCourse {
 		students = append(students, inscripto.UserId)
 	}
 	return students
+}
+
+// MIDDLEWARE FUNC
+func (c *InscriptosClient) IsUserEnrolled(userID uuid.UUID, courseID uuid.UUID) (bool, error) {
+	var count int64
+	err := c.Db.Model(&model.Inscripto{}).
+		Where("user_id = ? AND course_id = ?", userID, courseID).
+		Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	fmt.Println("Enrolled count: ", count)
+	return count == 0, nil
+}
+func (c *InscriptosClient) CourseExist(course_id uuid.UUID) (bool, error) {
+	var count int64
+	err := c.Db.Model(&model.Course{}).
+		Where("Id = ?", course_id).
+		Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	fmt.Println("Count: ", count)
+	return count > 0, nil
 }

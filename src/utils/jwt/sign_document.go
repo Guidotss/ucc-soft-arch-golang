@@ -7,21 +7,23 @@ import (
 )
 
 type CustomClaims struct {
-	Id uuid.UUID `json:"id"`
+	Id   uuid.UUID `json:"id"`
+	Role int       `json:"role"`
 }
 
 func (c *CustomClaims) Valid() error {
 	return nil
 }
 
-func NewCustomClaims(id uuid.UUID) *CustomClaims {
+func NewCustomClaims(id uuid.UUID, role int) *CustomClaims {
 	return &CustomClaims{
-		Id: id,
+		Id:   id,
+		Role: role,
 	}
 }
 
-func SignDocument(id uuid.UUID) string {
-	claims := NewCustomClaims(id)
+func SignDocument(id uuid.UUID, role int) string {
+	claims := NewCustomClaims(id, role)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	envs := config.LoadEnvs(".env")
 	secret := []byte(envs.Get("JWT_SECRET"))

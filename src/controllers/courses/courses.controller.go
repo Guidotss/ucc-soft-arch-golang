@@ -44,3 +44,19 @@ func (c *CourseController) GetById(g *gin.Context) {
 	}
 	g.JSON(200, response)
 }
+
+func (c *CourseController) UpdateCourse(g *gin.Context) {
+	var courseDto coursesDomain.UpdateRequestDto
+	err := g.BindJSON(&courseDto)
+	if err != nil {
+		g.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := c.CourseService.UpdateCourse(courseDto)
+	g.JSON(201, gin.H{
+		"ok":      true,
+		"message": "Course updated successfully",
+		"data":    response,
+	})
+}
