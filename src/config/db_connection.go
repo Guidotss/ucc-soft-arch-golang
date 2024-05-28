@@ -15,7 +15,7 @@ func NewConnection(dsn string) *gorm.DB {
 
 	fmt.Println("Connection Opened to Database")
 
-	//	db.AutoMigrate(model.User{}, model.Course{}, model.Categories{}, model.Inscripto{}, model.Rating{})
+	// db.AutoMigrate(model.User{}, model.Course{}, model.Categories{}, model.Inscripto{}, model.Rating{}, model.Comment{})
 
 	return db
 	// defer db.Close()
