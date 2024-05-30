@@ -1,13 +1,14 @@
 package services
 
 import (
-	"github.com/Guidotss/ucc-soft-arch-golang.git/src/clients/rating"
+	rating "github.com/Guidotss/ucc-soft-arch-golang.git/src/clients/rating"
 	dto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/rating"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
 )
 
 type IRatingService interface {
 	NewRating(dto dto.RatingRequestResponseDto) dto.RatingRequestResponseDto
+	GetCourseRatings(courseId dto.GetCourseRatingRequestDto) dto.CourseRatingsDto
 }
 
 type ratingService struct {
@@ -32,4 +33,15 @@ func (r *ratingService) NewRating(data dto.RatingRequestResponseDto) dto.RatingR
 		UserId:   rating.UserId,
 		Rating:   rating.Rating,
 	}
+}
+func (r *ratingService) GetCourseRatings(courseId dto.GetCourseRatingRequestDto) dto.CourseRatingsDto {
+	var ratings = r.client.GetCourseRaiting(courseId.CourseId)
+	var courseRatings dto.CourseRatingsDto
+	for _, rating := range ratings {
+		courseRatings = append(courseRatings, dto.GetCourseRatingResponseDto{
+			CourseId: rating.CourseId,
+			Rating:   rating.Rating,
+		})
+	}
+	return courseRatings
 }

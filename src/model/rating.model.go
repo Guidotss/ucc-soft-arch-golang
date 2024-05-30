@@ -14,3 +14,5 @@ type Rating struct {
 	User   User
 	Course Course
 }
+
+type Ratings []Rating
