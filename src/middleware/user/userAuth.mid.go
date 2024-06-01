@@ -2,10 +2,10 @@ package user
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/config"
+	customError "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/errors"
 	utilsJWT "github.com/Guidotss/ucc-soft-arch-golang.git/src/utils/jwt"
 	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt"
@@ -17,14 +17,16 @@ func AuthMiddleware() gin.HandlerFunc {
 		authHeader := c.GetHeader("Authorization")
 		fmt.Println("auth:", authHeader)
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
+			err := customError.NewError("AUTHORIZATION_REQUIRED", "Authorization header is required", 400)
+			c.Error(err)
 			c.Abort()
 			return
 		}
 
 		tokenParts := strings.Split(authHeader, "Bearer ")
 		if len(tokenParts) != 2 {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+			err := customError.NewError("INVALID_TOKEN", "Invalid token", 400)
+			c.Error(err)
 			c.Abort()
 			return
 		}
@@ -40,13 +42,15 @@ func AuthMiddleware() gin.HandlerFunc {
 		})
 
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			err := customError.NewError("INVALID_TOKEN", "Invalid token", 400)
+			c.Error(err)
 			c.Abort()
 			return
 		}
 
 		if !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			err := customError.NewError("INVALID_TOKEN", "Invalid token", 400)
+			c.Error(err)
 			c.Abort()
 			return
 		}

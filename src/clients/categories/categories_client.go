@@ -27,7 +27,7 @@ func (c *CategoriesClient) Create(category model.Category) (model.Category, erro
 		case strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint"):
 			err = customError.NewError(
 				"DUPLICATE_IDENTIFIER",
-				"A course with the same identifier already exists. Please use a different identifier.",
+				"A category with the same identifier already exists. Please use a different identifier.",
 				http.StatusConflict)
 		case strings.Contains(result.Error.Error(), "connection"):
 			err = customError.NewError(

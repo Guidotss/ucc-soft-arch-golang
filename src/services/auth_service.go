@@ -1,11 +1,11 @@
 package services
 
 import (
-	"errors"
 	"fmt"
 
 	client "github.com/Guidotss/ucc-soft-arch-golang.git/src/clients/users"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/users"
+	customError "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/errors"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/utils/bcrypt"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/utils/jwt"
 	"github.com/google/uuid"
@@ -17,7 +17,7 @@ type AuthService struct {
 }
 
 type IAuthService interface {
-	RefreshToken(token string) (users.GetUserDto, string)
+	RefreshToken(token string) (users.GetUserDto, string, error)
 	Login(loginDto users.LoginRequestDto) (users.GetUserDto, string, error)
 }
 
@@ -28,21 +28,25 @@ func NewAuthService(userService *IUserService, client *client.UsersClient) IAuth
 	}
 }
 
-func (a *AuthService) RefreshToken(token string) (users.GetUserDto, string) {
+func (a *AuthService) RefreshToken(token string) (users.GetUserDto, string, error) {
 	claims, err := jwt.VerifyToken(token)
-
 	if err != nil {
-		panic(err)
+		return users.GetUserDto{}, "", customError.NewError("INVALID TOKEN", "Invalid token", 401)
 	}
+
 	fmt.Println(claims)
 	id, err := uuid.Parse(claims["id"].(string))
-	roleInterface := claims["role"].(float64)
-	role := int(roleInterface)
 	if err != nil {
-		panic(err)
+		return users.GetUserDto{}, "", customError.NewError("INVALID ID", "Invalid ID", 401)
 	}
 
-	checkUser := a.userService.GetUserById(id)
+	roleInterface := claims["role"].(float64)
+	role := int(roleInterface)
+
+	checkUser, err := a.userService.GetUserById(id)
+	if err != nil {
+		return users.GetUserDto{}, "", err
+	}
 
 	if checkUser.Id == uuid.Nil {
 		panic("User not found")
@@ -50,20 +54,18 @@ func (a *AuthService) RefreshToken(token string) (users.GetUserDto, string) {
 
 	newToken := jwt.SignDocument(id, role)
 
-	return checkUser, newToken
+	return checkUser, newToken, nil
 }
 
 func (a *AuthService) Login(loginDto users.LoginRequestDto) (users.GetUserDto, string, error) {
-	user := a.client.FindByEmail(loginDto.Email)
 	var userDto users.GetUserDto
-	if user.Id == uuid.Nil {
-		err := errors.New("user not found")
+	user, err := a.client.FindByEmail(loginDto.Email)
+	if err != nil {
 		return users.GetUserDto{}, "", err
 	}
 
 	if !bcrypt.ComparePassword(loginDto.Password, user.Password) {
-		err := errors.New("invalid Password")
-		return users.GetUserDto{}, "", err
+		return users.GetUserDto{}, "", customError.NewError("INVALID CREDENTIALS", "Invalid credentials", 401)
 	}
 
 	newToken := jwt.SignDocument(user.Id, user.Role)

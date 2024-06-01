@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/users"
+	customError "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/errors"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/services"
 	"github.com/gin-gonic/gin"
 )
@@ -25,14 +26,18 @@ func (a *AuthController) RefreshToken(c *gin.Context) {
 	authorization := c.GetHeader("Authorization")
 
 	if authorization == "" {
-		c.JSON(400, gin.H{"error": "Authorization header is required"})
+		err := customError.NewError("AUTHORIZATION_REQUIRED", "Authorization header is required", 400)
+		c.Error(err)
 		return
 	}
 
 	authorization = authorization[7:]
 
-	user, token := a.service.RefreshToken(authorization)
-
+	user, token, err := a.service.RefreshToken(authorization)
+	if err != nil {
+		c.Error(err)
+		return
+	}
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.Header("Content-Type", "application/json")
 	c.JSON(200, gin.H{
@@ -55,7 +60,7 @@ func (a *AuthController) Login(c *gin.Context) {
 
 	user, token, err := a.service.Login(loginDto)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 

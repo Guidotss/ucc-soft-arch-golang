@@ -3,7 +3,11 @@ package users
 import (
 	"fmt"
 
-	dto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/users"
+	"errors"
+	"net/http"
+	"strings"
+
+	customError "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/errors"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -17,58 +21,79 @@ func NewUsersClient(db *gorm.DB) *UsersClient {
 	return &UsersClient{Db: db}
 }
 
-func (u *UsersClient) Create(user model.User) model.User {
-	result := u.Db.Create(&user)
+func (c *UsersClient) Create(user model.User) (model.User, error) {
+	result := c.Db.Create(&user)
 	if result.Error != nil {
-		panic(result.Error)
+		var err error
+		switch {
+		case strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint"):
+			err = customError.NewError(
+				"DUPLICATE_IDENTIFIER",
+				"A user with the same identifier or email already exists. Please use a different identifier or email.",
+				http.StatusConflict)
+		case strings.Contains(result.Error.Error(), "connection"):
+			err = customError.NewError(
+				"DB_CONNECTION_ERROR",
+				"Database connection error. Please try again later.",
+				http.StatusInternalServerError)
+		default:
+			err = customError.NewError(
+				"UNEXPECTED_ERROR",
+				"An unexpected error occurred. Please try again later.",
+				http.StatusInternalServerError)
+		}
+		return model.User{}, err
 	}
-	return user
+	return user, nil
 }
 
-func (u *UsersClient) FindById(id uuid.UUID) model.User {
+func (c *UsersClient) FindById(id uuid.UUID) (model.User, error) {
 	var user model.User
-	result := u.Db.First(&user, id)
-	if result.Error != nil {
-		panic(result.Error)
+	err := c.Db.Where("id = ?", id).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.User{}, customError.NewError("NOT_FOUND", "User not found", http.StatusNotFound)
+		}
+		return model.User{}, customError.NewError("DB_ERROR", "Error retrieving User from database", http.StatusInternalServerError)
 	}
-	return user
+	return user, nil
 }
 
-func (u *UsersClient) FindByEmail(email string) model.User {
+func (c *UsersClient) FindByEmail(email string) (model.User, error) {
 	var user model.User
-	fmt.Println("email: ", email)
-	result := u.Db.Where("email = ?", email).First(&user)
-	if result.Error != nil {
-		user.Id = uuid.Nil
-		return user
+	err := c.Db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.User{}, customError.NewError("NOT_FOUND", "User not found", http.StatusNotFound)
+		}
+		return model.User{}, customError.NewError("DB_ERROR", "Error retrieving User from database", http.StatusInternalServerError)
 	}
 	fmt.Println("Result: ", user)
-	return user
+	return user, nil
 }
 
-func (u *UsersClient) UpdateUser(dto dto.UpdateRequestDto) model.User {
-	var user model.User
-	result := u.Db.First(&user, dto.Id)
+func (c *UsersClient) UpdateUser(user model.User) (model.User, error) {
+	result := c.Db.Table("users").Where("id = ?", user.Id).Updates(&user)
 	if result.Error != nil {
-		//manejo de errores
-		panic(result.Error)
+		var err error
+		switch {
+		case strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint"):
+			err = customError.NewError(
+				"DUPLICATE_IDENTIFIER",
+				"A user with the same identifier or email already exists. Please use a different identifier or email.",
+				http.StatusConflict)
+		case strings.Contains(result.Error.Error(), "connection"):
+			err = customError.NewError(
+				"DB_CONNECTION_ERROR",
+				"Database connection error. Please try again later.",
+				http.StatusInternalServerError)
+		default:
+			err = customError.NewError(
+				"UNEXPECTED_ERROR",
+				"An unexpected error occurred. Please try again later.",
+				http.StatusInternalServerError)
+		}
+		return model.User{}, err
 	}
-	if dto.Email != "" {
-		user.Email = dto.Email
-	}
-	if dto.Username != "" {
-		user.Name = dto.Username
-	}
-	if dto.Password != "" {
-		user.Password = dto.Password
-	}
-	if dto.Avatar != "" {
-		user.Avatar = dto.Avatar
-	}
-	result = u.Db.Save(&user)
-	if result.Error != nil {
-		//manejo de errores
-		panic(result.Error)
-	}
-	return user
+	return user, nil
 }

@@ -1,38 +1,28 @@
 package user
 
 import (
-	"fmt"
-
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/users"
+	customError "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/errors"
 
-	//"github.com/Guidotss/ucc-soft-arch-golang.git/src/services"
 	"github.com/gin-gonic/gin"
 )
 
-// AuthMiddleware verifica el token JWT
 func RegisterMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("Entro al middleware")
 		var user users.RegisterRequest
 		err := c.BindJSON(&user)
-		fmt.Println("UserRequest: ", user)
 		if err != nil {
-			c.JSON(400, gin.H{
-				"Ok":    false,
-				"error": "Invalid request",
-			})
+			err := customError.NewError("INVALID_REQUEST", "Invalid request", 400)
+			c.Error(err)
 			c.Abort()
 			return
 		}
 		if user.Password == "" || user.Email == "" || user.Username == "" {
-			c.JSON(400, gin.H{
-				"Ok":    false,
-				"error": "All fields are required",
-			})
+			err := customError.NewError("INVALID_REQUEST", "Invalid request", 400)
+			c.Error(err)
 			c.Abort()
 			return
 		}
-		fmt.Println("Paso register middleware")
 		c.Set("Username", user.Username)
 		c.Set("Email", user.Email)
 		c.Set("Password", user.Password)
