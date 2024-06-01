@@ -25,11 +25,19 @@ func (c *CategoriesController) Create(g *gin.Context) {
 		g.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	response := c.CategoriesService.CreateCategory(categoryDto)
+	response, err := c.CategoriesService.CreateCategory(categoryDto)
+	if err != nil {
+		g.Error(err)
+		return
+	}
 	g.JSON(201, response)
 }
 
 func (c *CategoriesController) GetAll(g *gin.Context) {
-	response := c.CategoriesService.FindAllCategories()
+	response, err := c.CategoriesService.FindAllCategories()
+	if err != nil {
+		g.Error(err)
+		return
+	}
 	g.JSON(200, response)
 }
