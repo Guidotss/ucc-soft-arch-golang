@@ -22,3 +22,5 @@ func (c *CommentsClient) NewComment(comments model.Comment) model.Comment {
 	}
 	return comments
 }
+
+//func (c *CommentsClient) GetComments(courseID uuid.UUID)

@@ -10,8 +10,8 @@ type Inscripto struct {
 	CourseId uuid.UUID
 	UserId   uuid.UUID
 
-	User   User
-	Course Course
+	User   User   `gorm:"foreignKey:UserId"`
+	Course Course `gorm:"foreignKey:CourseId"`
 }
 
 type StudentsInCourse []uuid.UUID

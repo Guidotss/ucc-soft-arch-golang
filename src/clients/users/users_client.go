@@ -39,8 +39,8 @@ func (u *UsersClient) FindByEmail(email string) model.User {
 	fmt.Println("email: ", email)
 	result := u.Db.Where("email = ?", email).First(&user)
 	if result.Error != nil {
-		fmt.Println("error en el result")
-		panic(result.Error)
+		user.Id = uuid.Nil
+		return user
 	}
 	fmt.Println("Result: ", user)
 	return user

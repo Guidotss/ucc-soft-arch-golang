@@ -1,0 +1,50 @@
+[
+    {
+    "id": "a648f076-6e3b-4d86-ad4f-e3a4a8319296",
+    "category_id": "a03f5d0a-5888-4882-bfa2-acad1eb16d15",
+    "course_name": "Ingles Nivel Principiante",
+    "description": "Curso inicial de ingles, a donde debes ir si quieres empezar con este idioma",
+    "price": 500,
+    "duration": 4,
+    "capacity": 20,
+    "init_date": "Fri May 17 2024 19:01:55 GMT-0300",
+    "state": true,
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdtclIgKq7QwRi-iDXFbYbxf4kzyRH3tcswZdzrpo2AQ&s"
+    },
+    {
+    "id": "60c04df4-c9c6-43c9-9651-a0c8d0a1a092",
+    "category_id": "05d0be68-48ad-4159-a4e1-69e9c2f6de39",
+    "course_name": "Neuquino avanzado",
+    "description": "Aprende de la mano de guido todo lo necesario para hablar neuquino como un nativo",
+    "price": 15000,
+    "duration": 4,
+    "capacity": 20,
+    "init_date": "Fri May 17 2024 19:01:55 GMT-0300",
+    "state": true,
+    "image": "https://ih1.redbubble.net/image.1960178808.6984/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.u5.jpg"
+    },
+    {
+    "id": "acc6fcac-7647-41bb-a748-50177fa35213",
+    "category_id": "05d0be68-48ad-4159-a4e1-69e9c2f6de39",
+    "course_name": "Neuquino intermedio",
+    "description": "Aprende de la mano de guido todo lo necesario para hablar neuquino como un retrasado",
+    "price": 1200,
+    "duration": 4,
+    "capacity": 20,
+    "init_date": "Fri May 17 2024 19:01:55 GMT-0300",
+    "state": true,
+    "image": "https://ih1.redbubble.net/image.2868325933.3044/tst,small,507x507-pad,600x600,f8f8f8.jpg"
+    },
+    {
+    "id": "420c7fb6-58f3-4ac1-b646-b4836c6611e5",
+    "category_id": "05d0be68-48ad-4159-a4e1-69e9c2f6de39",
+    "course_name": "Neuquino basico",
+    "description": "¿Alguna vez quisiste saber como no hablar neuquino? Entonces, este es el curso indicado para ti",
+    "price": 1200,
+    "duration": 4,
+    "capacity": 20,
+    "init_date": "Fri May 17 2024 19:01:55 GMT-0300",
+    "state": true,
+    "image": "https://i.imgflip.com/52ee9h.png"
+    }
+    ]

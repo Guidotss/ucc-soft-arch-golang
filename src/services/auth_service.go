@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 
 	client "github.com/Guidotss/ucc-soft-arch-golang.git/src/clients/users"
@@ -17,7 +18,7 @@ type AuthService struct {
 
 type IAuthService interface {
 	RefreshToken(token string) (users.GetUserDto, string)
-	Login(loginDto users.LoginRequestDto) (users.GetUserDto, string)
+	Login(loginDto users.LoginRequestDto) (users.GetUserDto, string, error)
 }
 
 func NewAuthService(userService *IUserService, client *client.UsersClient) IAuthService {
@@ -52,20 +53,22 @@ func (a *AuthService) RefreshToken(token string) (users.GetUserDto, string) {
 	return checkUser, newToken
 }
 
-func (a *AuthService) Login(loginDto users.LoginRequestDto) (users.GetUserDto, string) {
+func (a *AuthService) Login(loginDto users.LoginRequestDto) (users.GetUserDto, string, error) {
 	user := a.client.FindByEmail(loginDto.Email)
-
+	var userDto users.GetUserDto
 	if user.Id == uuid.Nil {
-		panic("User not found")
+		err := errors.New("user not found")
+		return users.GetUserDto{}, "", err
 	}
 
 	if !bcrypt.ComparePassword(loginDto.Password, user.Password) {
-		panic("Invalid password")
+		err := errors.New("invalid Password")
+		return users.GetUserDto{}, "", err
 	}
 
 	newToken := jwt.SignDocument(user.Id, user.Role)
 
-	var userDto = users.GetUserDto{
+	userDto = users.GetUserDto{
 		Id:       user.Id,
 		Email:    user.Email,
 		Role:     user.Role,
@@ -73,5 +76,5 @@ func (a *AuthService) Login(loginDto users.LoginRequestDto) (users.GetUserDto, s
 		Avatar:   user.Avatar,
 	}
 
-	return userDto, newToken
+	return userDto, newToken, nil
 }

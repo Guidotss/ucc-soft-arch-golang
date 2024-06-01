@@ -45,7 +45,10 @@ func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.
 }
 
 func (c *courseService) FindAllCourses() dto.GetAllCourses {
-	var courses model.Courses = c.client.GetAll()
+	courses, err := c.client.GetAll()
+	if err != nil {
+		return dto.GetAllCourses{}
+	}
 	var allCoursesDto dto.GetAllCourses
 	for _, result := range courses {
 		var courseDto dto.GetCourseDto
@@ -59,18 +62,20 @@ func (c *courseService) FindAllCourses() dto.GetAllCourses {
 		courseDto.CourseInitDate = result.CourseInitDate
 		courseDto.CourseState = result.CourseState
 		courseDto.CourseImage = result.CourseImage
-
+		courseDto.CourseCategoryName = result.Category.CategoryName
+		courseDto.RatingAvg = result.RatingAvg
 		allCoursesDto = append(allCoursesDto, courseDto)
 	}
 	return allCoursesDto
 }
 
 func (c *courseService) FindOneCourse(id uuid.UUID) dto.GetCourseDto {
-	var result model.Course = c.client.GetById(id)
 	var courseDto dto.GetCourseDto
-	/*
-	********FALTA MANEJO DE ERRORES*******
-	 */
+	result, err := c.client.GetById(id)
+	if err != nil {
+		return dto.GetCourseDto{}
+	}
+
 	courseDto.Id = result.Id
 	courseDto.CategoryID = result.CategoryID
 	courseDto.CourseName = result.CourseName
@@ -87,7 +92,10 @@ func (c *courseService) FindOneCourse(id uuid.UUID) dto.GetCourseDto {
 
 func (c *courseService) UpdateCourse(newData dto.UpdateRequestDto) dto.UpdateResponseDto {
 	var responseDto dto.UpdateResponseDto
-	result := c.client.UpdateCourse(newData)
+	result, err := c.client.UpdateCourse(newData)
+	if err != nil {
+		return dto.UpdateResponseDto{}
+	}
 	responseDto.Id = result.Id
 	responseDto.CategoryID = result.CategoryID
 	responseDto.CourseName = result.CourseName

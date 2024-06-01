@@ -17,7 +17,9 @@ type Course struct {
 	CourseCapacity    int       `gorm:"cupo;default:15"`
 	CourseImage       string    `gorm:"image;default:https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"`
 	CategoryID        uuid.UUID
-	Category          Category
+	Category          Category `gorm:"foreignKey:CategoryID"`
+	Ratings           Ratings  `gorm:"foreignKey:CourseId"`
+	RatingAvg         float64  `json:"ratingavg"`
 }
 
 func (model *Course) BeforeCreate(tx *gorm.DB) (err error) {

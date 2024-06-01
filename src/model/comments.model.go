@@ -7,10 +7,11 @@ import (
 
 type Comment struct {
 	gorm.Model
-	CourseId uuid.UUID
+	Text     string `gorm:"type:text"`
 	UserId   uuid.UUID
-	Text     string `gorm:"text"`
-
-	User   User
-	Course Course
+	CourseId uuid.UUID
+	User     User   `gorm:"foreignKey:UserId"`
+	Course   Course `gorm:"foreignKey:CourseId"`
 }
+
+type Comments []Comment

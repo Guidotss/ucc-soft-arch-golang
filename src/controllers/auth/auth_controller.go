@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"fmt"
+
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/users"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/services"
 	"github.com/gin-gonic/gin"
@@ -49,7 +51,13 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	user, token := a.service.Login(loginDto)
+	fmt.Println("LoginDTO: ", loginDto)
+
+	user, token, err := a.service.Login(loginDto)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(200, gin.H{
 		"ok":      true,

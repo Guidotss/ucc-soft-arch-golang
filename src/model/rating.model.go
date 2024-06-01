@@ -9,10 +9,10 @@ type Rating struct {
 	gorm.Model
 	CourseId uuid.UUID
 	UserId   uuid.UUID
-	Rating   int `gorm:"rating"`
+	Rating   int `gorm:"type:int"`
 
-	User   User
-	Course Course
+	User   User   `gorm:"foreignKey:UserId"`
+	Course Course `gorm:"foreignKey:CourseId"`
 }
 
 type Ratings []Rating
