@@ -11,6 +11,13 @@ type CommentRequestResponseDto struct {
 type GetCommentRequest struct {
 	CourseId uuid.UUID `json:"course_id"`
 }
-type GetCommentResponse struct {
-	Comments []CommentRequestResponseDto `json:"comments"`
+
+type CommentResponse struct {
+	Text string `json:"text"`
+	User struct {
+		Name   string    `json:"name"`
+		Avatar string    `json:"avatar"`
+		Id     uuid.UUID `json:"id"`
+	}
 }
+type GetCommentsResponse []CommentResponse

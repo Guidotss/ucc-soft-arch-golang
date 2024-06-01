@@ -1,9 +1,13 @@
 package comments
 
 import (
+	"net/http"
+
 	dto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/comments"
+	customError "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/errors"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/services"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type CommentsController struct {
@@ -17,15 +21,32 @@ func NewCommentsController(service services.ICommentsService) *CommentsControlle
 func (c *CommentsController) NewComment(g *gin.Context) {
 	var commentDto dto.CommentRequestResponseDto
 	if err := g.BindJSON(&commentDto); err != nil {
-		g.JSON(400, gin.H{
-			"message": "La estructura del json es incorrecta",
-		})
+		g.Error(err)
 		return
 	}
 
-	response := c.CommentsService.NewComment(commentDto)
+	response, err := c.CommentsService.NewComment(commentDto)
+	if err != nil {
+		g.Error(err)
+		return
+	}
 	g.JSON(201, gin.H{
 		"response": response,
 		"message":  "La comentario se registro con exito",
 	})
+}
+
+func (c *CommentsController) GetCourseComments(g *gin.Context) {
+	id := g.Param("id")
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		g.Error(customError.NewError("INVALID_UUID", "Invalid UUID", http.StatusBadRequest))
+		return
+	}
+	response, err := c.CommentsService.GetCourseComments(uuid)
+	if err != nil {
+		g.Error(err)
+		return
+	}
+	g.JSON(200, response)
 }

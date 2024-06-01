@@ -17,8 +17,6 @@ func main() {
 	envs := config.LoadEnvs(".env")
 	db := config.NewConnection((envs.Get("DATABASE_URL")))
 
-	// Crear un nuevo router
-
 	// Llamar a la función que define las rutas de la aplicación
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowAllOrigins = true

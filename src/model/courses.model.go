@@ -19,7 +19,7 @@ type Course struct {
 	CategoryID        uuid.UUID
 	Category          Category `gorm:"foreignKey:CategoryID"`
 	Ratings           Ratings  `gorm:"foreignKey:CourseId"`
-	RatingAvg         float64  `json:"ratingavg"`
+	RatingAvg         float64  `gorm:"-" json:"ratingavg"`
 }
 
 func (model *Course) BeforeCreate(tx *gorm.DB) (err error) {
