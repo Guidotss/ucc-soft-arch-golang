@@ -8,10 +8,10 @@ import (
 )
 
 type ICourseService interface {
-	CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.CreateCoursesResponseDto
-	FindAllCourses() dto.GetAllCourses
-	FindOneCourse(id uuid.UUID) dto.GetCourseDto
-	UpdateCourse(dto dto.UpdateRequestDto) dto.UpdateResponseDto
+	CreateCourse(courseDto dto.CreateCoursesRequestDto) (dto.CreateCoursesResponseDto, error)
+	FindAllCourses() (dto.GetAllCourses, error)
+	FindOneCourse(id uuid.UUID) (dto.GetCourseDto, error)
+	UpdateCourse(dto dto.UpdateRequestDto) (dto.UpdateResponseDto, error)
 }
 
 type courseService struct {
@@ -22,7 +22,7 @@ func NewCourseService(client *courses.CourseClient) ICourseService {
 	return &courseService{client: *client}
 }
 
-func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.CreateCoursesResponseDto {
+func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) (dto.CreateCoursesResponseDto, error) {
 
 	var newCourse = model.Course{
 		CourseName:        courseDto.CourseName,
@@ -36,18 +36,21 @@ func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) dto.
 		CourseImage:       courseDto.CourseImage,
 	}
 
-	createdCourse := c.client.Create(newCourse)
+	createdCourse, err := c.client.Create(newCourse)
+	if err != nil {
+		return dto.CreateCoursesResponseDto{}, err
+	}
 
 	return dto.CreateCoursesResponseDto{
 		CourseName: createdCourse.CourseName,
 		CourseId:   createdCourse.Id,
-	}
+	}, nil
 }
 
-func (c *courseService) FindAllCourses() dto.GetAllCourses {
+func (c *courseService) FindAllCourses() (dto.GetAllCourses, error) {
 	courses, err := c.client.GetAll()
 	if err != nil {
-		return dto.GetAllCourses{}
+		return nil, err
 	}
 	var allCoursesDto dto.GetAllCourses
 	for _, result := range courses {
@@ -66,46 +69,74 @@ func (c *courseService) FindAllCourses() dto.GetAllCourses {
 		courseDto.RatingAvg = result.RatingAvg
 		allCoursesDto = append(allCoursesDto, courseDto)
 	}
-	return allCoursesDto
+	return allCoursesDto, nil
 }
 
-func (c *courseService) FindOneCourse(id uuid.UUID) dto.GetCourseDto {
-	var courseDto dto.GetCourseDto
+func (c *courseService) FindOneCourse(id uuid.UUID) (dto.GetCourseDto, error) {
 	result, err := c.client.GetById(id)
 	if err != nil {
-		return dto.GetCourseDto{}
+		return dto.GetCourseDto{}, err
 	}
-
-	courseDto.Id = result.Id
-	courseDto.CategoryID = result.CategoryID
-	courseDto.CourseName = result.CourseName
-	courseDto.CourseDescription = result.CourseDescription
-	courseDto.CoursePrice = result.CoursePrice
-	courseDto.CourseDuration = result.CourseDuration
-	courseDto.CourseCapacity = result.CourseCapacity
-	courseDto.CourseInitDate = result.CourseInitDate
-	courseDto.CourseState = result.CourseState
-	courseDto.CourseImage = result.CourseImage
-
-	return courseDto
+	return dto.GetCourseDto{
+		Id:                 result.Id,
+		CategoryID:         result.CategoryID,
+		CourseName:         result.CourseName,
+		CourseDescription:  result.CourseDescription,
+		CoursePrice:        result.CoursePrice,
+		CourseDuration:     result.CourseDuration,
+		CourseCapacity:     result.CourseCapacity,
+		CourseInitDate:     result.CourseInitDate,
+		CourseState:        result.CourseState,
+		CourseImage:        result.CourseImage,
+		CourseCategoryName: result.Category.CategoryName,
+		RatingAvg:          result.RatingAvg,
+	}, nil
 }
 
-func (c *courseService) UpdateCourse(newData dto.UpdateRequestDto) dto.UpdateResponseDto {
-	var responseDto dto.UpdateResponseDto
-	result, err := c.client.UpdateCourse(newData)
-	if err != nil {
-		return dto.UpdateResponseDto{}
+func (c *courseService) UpdateCourse(newData dto.UpdateRequestDto) (dto.UpdateResponseDto, error) {
+	var course model.Course
+	if newData.CourseName != nil {
+		course.CourseName = *newData.CourseName
 	}
-	responseDto.Id = result.Id
-	responseDto.CategoryID = result.CategoryID
-	responseDto.CourseName = result.CourseName
-	responseDto.CourseDescription = result.CourseDescription
-	responseDto.CoursePrice = result.CoursePrice
-	responseDto.CourseDuration = result.CourseDuration
-	responseDto.CourseCapacity = result.CourseCapacity
-	responseDto.CourseInitDate = result.CourseInitDate
-	responseDto.CourseState = result.CourseState
-	responseDto.CourseImage = result.CourseImage
+	if newData.CourseDescription != nil {
+		course.CourseDescription = *newData.CourseDescription
+	}
+	if newData.CoursePrice != nil {
+		course.CoursePrice = *newData.CoursePrice
+	}
+	if newData.CourseDuration != nil {
+		course.CourseDuration = *newData.CourseDuration
+	}
+	if newData.CourseCapacity != nil {
+		course.CourseCapacity = *newData.CourseCapacity
+	}
+	if newData.CategoryID != nil {
+		course.CategoryID = *newData.CategoryID
+	}
+	if newData.CourseInitDate != nil {
+		course.CourseInitDate = *newData.CourseInitDate
+	}
+	if newData.CourseState != nil {
+		course.CourseState = *newData.CourseState
+	}
+	if newData.CourseImage != nil {
+		course.CourseImage = *newData.CourseImage
+	}
 
-	return responseDto
+	result, err := c.client.UpdateCourse(course)
+	if err != nil {
+		return dto.UpdateResponseDto{}, err
+	}
+	return dto.UpdateResponseDto{
+		Id:                result.Id,
+		CategoryID:        result.CategoryID,
+		CourseName:        result.CourseName,
+		CourseDescription: result.CourseDescription,
+		CoursePrice:       result.CoursePrice,
+		CourseDuration:    result.CourseDuration,
+		CourseCapacity:    result.CourseCapacity,
+		CourseInitDate:    result.CourseInitDate,
+		CourseState:       result.CourseState,
+		CourseImage:       result.CourseImage,
+	}, nil
 }

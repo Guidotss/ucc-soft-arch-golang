@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	coursesDomain "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/courses"
+	customError "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/errors"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/services"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -19,27 +20,43 @@ func NewCourseController(service services.ICourseService) *CourseController {
 
 func (c *CourseController) Create(g *gin.Context) {
 	var courseDto coursesDomain.CreateCoursesRequestDto
-	err := g.BindJSON(&courseDto)
-	if err != nil {
-		g.JSON(400, gin.H{"error": err.Error()})
+	if err := g.BindJSON(&courseDto); err != nil {
+		g.Error(err)
 		return
 	}
-
-	response := c.CourseService.CreateCourse(courseDto)
-	g.JSON(201, response)
+	response, err := c.CourseService.CreateCourse(courseDto)
+	if err != nil {
+		g.Error(err)
+		return
+	}
+	g.JSON(201, gin.H{
+		"ok":      true,
+		"message": "Course created successfully",
+		"data":    response,
+	})
 }
 
 func (c *CourseController) GetAll(g *gin.Context) {
-	response := c.CourseService.FindAllCourses()
+	response, err := c.CourseService.FindAllCourses()
+	if err != nil {
+		g.Error(err)
+		return
+	}
 	g.JSON(200, response)
 }
 
 func (c *CourseController) GetById(g *gin.Context) {
 	id := g.Param("id")
+
 	uuid, err := uuid.Parse(id)
-	response := c.CourseService.FindOneCourse(uuid)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
+		g.Error(customError.NewError("INVALID_UUID", "Invalid UUID", http.StatusBadRequest))
+		return
+	}
+
+	response, err := c.CourseService.FindOneCourse(uuid)
+	if err != nil {
+		g.Error(err)
 		return
 	}
 	g.JSON(200, response)
@@ -47,13 +64,15 @@ func (c *CourseController) GetById(g *gin.Context) {
 
 func (c *CourseController) UpdateCourse(g *gin.Context) {
 	var courseDto coursesDomain.UpdateRequestDto
-	err := g.BindJSON(&courseDto)
-	if err != nil {
-		g.JSON(400, gin.H{"error": err.Error()})
+	if err := g.BindJSON(&courseDto); err != nil {
+		g.Error(err)
 		return
 	}
-
-	response := c.CourseService.UpdateCourse(courseDto)
+	response, err := c.CourseService.UpdateCourse(courseDto)
+	if err != nil {
+		g.Error(err)
+		return
+	}
 	g.JSON(201, gin.H{
 		"ok":      true,
 		"message": "Course updated successfully",

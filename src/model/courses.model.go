@@ -8,7 +8,7 @@ import (
 type Course struct {
 	gorm.Model
 	Id                uuid.UUID `sql:"type:uuid;primary_key;default:gen_random_uuid()"`
-	CourseName        string    `gorm:"course_name"`
+	CourseName        string    `gorm:"course_name;unique"`
 	CourseDescription string    `gorm:"description"`
 	CoursePrice       float64   `gorm:"price"`
 	CourseDuration    int       `gorm:"duration"`

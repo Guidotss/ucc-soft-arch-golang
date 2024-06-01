@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/config"
+	middlewares "github.com/Guidotss/ucc-soft-arch-golang.git/src/middleware"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/routes"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,7 @@ func main() {
 
 	router := gin.Default()
 	router.Use(cors.New(corsConfig))
+	router.Use(middlewares.ErrorHandler())
 	routes.AppRoutes(router, db)
 
 	// Iniciar el servidor
