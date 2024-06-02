@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/adapter"
+	"github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -18,4 +19,8 @@ func AppRoutes(engine *gin.Engine, db *gorm.DB) {
 	InscriptionsRoutes(engine, InscriptionController, InscriptionService)
 	RatingRoutes(engine, adapter.RatingAdapter(db))
 	CommentsRoutes(engine, adapter.CommentAdapter(db))
+
+	engine.NoRoute(func(c *gin.Context) {
+		c.Error(errors.NewError("NOT_FOUND", "Route not found", 404))
+	})
 }
