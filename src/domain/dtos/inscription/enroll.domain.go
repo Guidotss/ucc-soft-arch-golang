@@ -7,14 +7,13 @@ type EnrollRequestResponseDto struct {
 	UserId   uuid.UUID `json:"user_id"`
 }
 type Student struct {
-	UserId uuid.UUID `json:"user_id"`
+	UserId   uuid.UUID `json:"user_id"`
+	UserName string    `json:"user_name"`
+	Avatar   string    `json:"avatar"`
 }
-type Course struct {
-	CourseId uuid.UUID `json:"course_id"`
-}
+
 type CourseIdString struct {
 	CourseId string `json:"course_id"`
 }
 
-type MyCoursesDto []Course
 type StudentsInCourse []Student

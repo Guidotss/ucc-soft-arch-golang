@@ -8,12 +8,14 @@ import (
 
 // AppRoutes es la función que se encarga de definir las rutas de la aplicación
 func AppRoutes(engine *gin.Engine, db *gorm.DB) {
+	InscriptionController, InscriptionService := adapter.InscriptionsAdapter(db)
+	UserController, UserService := adapter.UserAdapter(db)
 
 	CoursesRoutes(engine, adapter.CourseAdapter(db))
 	CategoriesRoutes(engine, adapter.CategoryAdapter(db))
-	UsersRoutes(engine, adapter.UserAdapter(db))
+	UsersRoutes(engine, UserController, UserService)
 	AuthRoutes(engine, adapter.AuthAdapter(db))
-	InscriptionsRoutes(engine, adapter.InscriptionsAdapter(db))
+	InscriptionsRoutes(engine, InscriptionController, InscriptionService)
 	RatingRoutes(engine, adapter.RatingAdapter(db))
 	CommentsRoutes(engine, adapter.CommentAdapter(db))
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterMiddleware() gin.HandlerFunc {
+func RegisterInputCheckMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user users.RegisterRequest
 		err := c.BindJSON(&user)

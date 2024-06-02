@@ -13,6 +13,3 @@ type Inscripto struct {
 	User   User   `gorm:"foreignKey:UserId"`
 	Course Course `gorm:"foreignKey:CourseId"`
 }
-
-type StudentsInCourse []uuid.UUID
-type MyCourses []uuid.UUID

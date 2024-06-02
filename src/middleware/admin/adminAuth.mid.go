@@ -12,7 +12,7 @@ import (
 )
 
 // AuthMiddleware verifica el token JWT y el rol del usuario
-func AuthMiddleware() gin.HandlerFunc {
+func AdminAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		fmt.Println("auth:", authHeader)

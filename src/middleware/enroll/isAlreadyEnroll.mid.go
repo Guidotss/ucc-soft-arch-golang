@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	controller "github.com/Guidotss/ucc-soft-arch-golang.git/src/controllers/inscriptions"
+	"github.com/Guidotss/ucc-soft-arch-golang.git/src/services"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-func IsAlredyEnroll(controller controller.InscriptionController) gin.HandlerFunc {
+func IsAlredyEnroll(service services.IInscriptionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		fmt.Println("IsAlredyEnroll middleware")
 		userID, exists := c.Get("userID")
@@ -34,8 +34,8 @@ func IsAlredyEnroll(controller controller.InscriptionController) gin.HandlerFunc
 			c.Abort()
 			return
 		}
-
-		if !controller.IsAlredyEnrolled(uid, cid) {
+		existEnrrol, err := service.IsUserEnrolled(uid, cid)
+		if existEnrrol {
 			c.JSON(400, gin.H{"error": "User is already enrolled"})
 			c.Abort()
 			return
