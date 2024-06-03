@@ -82,10 +82,7 @@ func (u *UserService) UpdateUser(dto userDomain.UpdateRequestDto) (userDomain.Up
 	var user model.User
 	user.Id = dto.Id
 	if dto.Password != "" {
-		hassedPassword, err := bcrypt.HasPassword(dto.Password)
-		if err != nil {
-			panic(err)
-		}
+		hassedPassword, _ := bcrypt.HasPassword(dto.Password)
 		dto.Password = hassedPassword
 	}
 	if dto.Username != "" {

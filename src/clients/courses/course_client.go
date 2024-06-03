@@ -2,6 +2,7 @@ package courses
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -87,19 +88,46 @@ func (c *CourseClient) GetAll() (model.Courses, error) {
 }
 
 func (c *CourseClient) GetById(id uuid.UUID) (model.Course, error) {
-	var course model.Course
-	err := c.Db.Where("id = ?", id).First(&course).Error
+	var rawResult map[string]interface{}
+	err := c.Db.Raw(
+		`SELECT courses.*, categories.category_name ,r.ratingavg
+			FROM courses, 
+				(SELECT course_id , AVG(rating) as ratingavg 
+				 FROM ratings GROUP BY course_id) as r, 
+				categories
+			WHERE 
+				courses.id = r.course_id AND 
+				courses.category_id = categories.id AND
+				courses.id = ?`, id).Scan(&rawResult).Error
+	fmt.Println("rawresult: ", rawResult)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return model.Course{}, customError.NewError("NOT_FOUND", "Course not found", http.StatusNotFound)
 		}
 		return model.Course{}, customError.NewError("DB_ERROR", "Error retrieving course from database", http.StatusInternalServerError)
 	}
+	course := model.Course{
+		Id:                parseUUID(rawResult["id"]),
+		CourseName:        rawResult["course_name"].(string),
+		CourseDescription: rawResult["course_description"].(string),
+		CoursePrice:       rawResult["course_price"].(float64),
+		CourseDuration:    int(rawResult["course_duration"].(int64)),
+		CourseInitDate:    rawResult["course_init_date"].(string),
+		CourseState:       rawResult["course_state"].(bool),
+		CourseCapacity:    int(rawResult["course_capacity"].(int64)),
+		CourseImage:       rawResult["course_image"].(string),
+		CategoryID:        parseUUID(rawResult["category_id"]),
+		Category: model.Category{
+			CategoryName: rawResult["category_name"].(string),
+		},
+		RatingAvg: rawResult["ratingavg"].(float64),
+	}
 	return course, nil
 }
 func (c *CourseClient) UpdateCourse(course model.Course) (model.Course, error) {
 
 	result := c.Db.Table("courses").Where("id = ?", course.Id).Updates(&course)
+
 	if result.Error != nil {
 		var err error
 		switch {

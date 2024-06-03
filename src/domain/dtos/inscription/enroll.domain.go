@@ -15,5 +15,11 @@ type Student struct {
 type CourseIdString struct {
 	CourseId string `json:"course_id"`
 }
+type MyCourse struct {
+	Id          uuid.UUID `json:"course_id"`
+	CourseName  string    `json:"course_name"`
+	CourseImage string    `json:"course_image"`
+}
 
 type StudentsInCourse []Student
+type MyCourses []MyCourse

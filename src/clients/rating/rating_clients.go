@@ -1,9 +1,8 @@
 package rating
 
 import (
+	customError "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/errors"
 	model "github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
-	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -15,21 +14,11 @@ func NewRatingClient(db *gorm.DB) *RatingClient {
 	return &RatingClient{Db: db}
 }
 
-func (c *RatingClient) NewRating(rating model.Rating) model.Rating {
+func (c *RatingClient) NewRating(rating model.Rating) (model.Rating, error) {
 	result := c.Db.Create(&rating)
 
 	if result.Error != nil {
-		log.Error()
+		return model.Rating{}, customError.NewError("INTERNAL_SERVER_ERROR", "Error creating rating", 500)
 	}
-	return rating
-}
-
-func (c *RatingClient) GetCourseRaiting(courseId uuid.UUID) model.Ratings {
-	var ratings []model.Rating
-	c.Db.Where("course_id = ?", courseId).Find(&ratings)
-	var courseRatings model.Ratings
-	for _, rating := range ratings {
-		courseRatings = append(courseRatings, rating)
-	}
-	return courseRatings
+	return rating, nil
 }

@@ -49,7 +49,7 @@ func (a *AuthService) RefreshToken(token string) (users.GetUserDto, string, erro
 	}
 
 	if checkUser.Id == uuid.Nil {
-		panic("User not found")
+		return users.GetUserDto{}, "", customError.NewError("USER NOT FOUND", "User not found", 404)
 	}
 
 	newToken := jwt.SignDocument(id, role)

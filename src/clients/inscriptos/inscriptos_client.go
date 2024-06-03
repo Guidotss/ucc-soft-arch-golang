@@ -81,7 +81,7 @@ func (c *InscriptosClient) GetMyStudents(id uuid.UUID) (model.Users, error) {
 	`, id).Scan(&rawResults).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, customError.NewError("COMMENTS_NOT_FOUND", "No Students found for the specified course", http.StatusNotFound)
+			return nil, customError.NewError("STUDENST_NOT_FOUND", "No Students found for the specified course", http.StatusNoContent)
 		} else if strings.Contains(err.Error(), "connection") {
 			return nil, customError.NewError("DB_CONNECTION_ERROR", "Database connection error. Please try again later.", http.StatusInternalServerError)
 		} else {

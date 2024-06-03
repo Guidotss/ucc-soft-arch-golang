@@ -29,7 +29,7 @@ func SignDocument(id uuid.UUID, role int) string {
 	secret := []byte(envs.Get("JWT_SECRET"))
 	signedToken, err := token.SignedString(secret)
 	if err != nil {
-		panic(err)
+		return ""
 	}
 	return signedToken
 }

@@ -7,8 +7,7 @@ import (
 )
 
 type IRatingService interface {
-	NewRating(dto dto.RatingRequestResponseDto) dto.RatingRequestResponseDto
-	GetCourseRatings(courseId dto.GetCourseRatingRequestDto) dto.CourseRatingsDto
+	NewRating(dto dto.RatingRequestResponseDto) (dto.RatingRequestResponseDto, error)
 }
 
 type ratingService struct {
@@ -19,29 +18,21 @@ func NewRatingService(client *rating.RatingClient) IRatingService {
 	return &ratingService{client: *client}
 }
 
-func (r *ratingService) NewRating(data dto.RatingRequestResponseDto) dto.RatingRequestResponseDto {
+func (r *ratingService) NewRating(data dto.RatingRequestResponseDto) (dto.RatingRequestResponseDto, error) {
 	var NewRating = model.Rating{
 		CourseId: data.CourseId,
 		UserId:   data.UserId,
 		Rating:   data.Rating,
 	}
 
-	rating := r.client.NewRating(NewRating)
+	rating, err := r.client.NewRating(NewRating)
+	if err != nil {
+		return dto.RatingRequestResponseDto{}, err
+	}
 
 	return dto.RatingRequestResponseDto{
 		CourseId: rating.CourseId,
 		UserId:   rating.UserId,
 		Rating:   rating.Rating,
-	}
-}
-func (r *ratingService) GetCourseRatings(courseId dto.GetCourseRatingRequestDto) dto.CourseRatingsDto {
-	var ratings = r.client.GetCourseRaiting(courseId.CourseId)
-	var courseRatings dto.CourseRatingsDto
-	for _, rating := range ratings {
-		courseRatings = append(courseRatings, dto.GetCourseRatingResponseDto{
-			CourseId: rating.CourseId,
-			Rating:   rating.Rating,
-		})
-	}
-	return courseRatings
+	}, nil
 }
