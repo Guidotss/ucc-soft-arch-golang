@@ -37,7 +37,8 @@ func (c *CourseController) Create(g *gin.Context) {
 }
 
 func (c *CourseController) GetAll(g *gin.Context) {
-	response, err := c.CourseService.FindAllCourses()
+	filter := g.Query("filter")
+	response, err := c.CourseService.FindAllCourses(filter)
 	if err != nil {
 		g.Error(err)
 		return

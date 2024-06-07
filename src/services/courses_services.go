@@ -9,7 +9,7 @@ import (
 
 type ICourseService interface {
 	CreateCourse(courseDto dto.CreateCoursesRequestDto) (dto.CreateCoursesResponseDto, error)
-	FindAllCourses() (dto.GetAllCourses, error)
+	FindAllCourses(filter string) (dto.GetAllCourses, error)
 	FindOneCourse(id uuid.UUID) (dto.GetCourseDto, error)
 	UpdateCourse(dto dto.UpdateRequestDto) (dto.UpdateResponseDto, error)
 }
@@ -47,8 +47,8 @@ func (c *courseService) CreateCourse(courseDto dto.CreateCoursesRequestDto) (dto
 	}, nil
 }
 
-func (c *courseService) FindAllCourses() (dto.GetAllCourses, error) {
-	courses, err := c.client.GetAll()
+func (c *courseService) FindAllCourses(filter string) (dto.GetAllCourses, error) {
+	courses, err := c.client.GetAll(filter)
 	if err != nil {
 		return nil, err
 	}

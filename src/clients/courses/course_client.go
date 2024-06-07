@@ -47,23 +47,57 @@ func (c *CourseClient) Create(course model.Course) (model.Course, error) {
 	return course, nil
 }
 
-func (c *CourseClient) GetAll() (model.Courses, error) {
+func (c *CourseClient) GetAll(filter string) (model.Courses, error) {
 	var courses model.Courses
 	var rawResults []map[string]interface{}
-	err := c.Db.Raw(
-		`SELECT courses.*, categories.category_name ,r.ratingavg
-			FROM courses, 
-				(SELECT course_id , AVG(rating) as ratingavg 
-				 FROM ratings GROUP BY course_id) as r, 
-				categories
-			WHERE 
-				courses.id = r.course_id AND 
-				courses.category_id = categories.id`).Scan(&rawResults).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, customError.NewError("NOT_FOUND", "There is no courses", http.StatusNotFound)
+	if filter == "" {
+		err := c.Db.Raw(
+			`SELECT 
+    		courses.*, 
+    		categories.category_name, 
+    		COALESCE(r.ratingavg, 0) as ratingavg
+		FROM 
+    		courses
+		LEFT JOIN 
+    		(SELECT course_id, AVG(rating) as ratingavg 
+		FROM ratings 
+    	GROUP BY course_id) as r ON 
+    		courses.id = r.course_id
+		JOIN 
+    		categories 
+		ON 
+    		courses.category_id = categories.id;`).Scan(&rawResults).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, customError.NewError("NOT_FOUND", "There is no courses", http.StatusNotFound)
+			}
+			return nil, customError.NewError("DB_ERROR", "Error retrieving course from database", http.StatusInternalServerError)
 		}
-		return nil, customError.NewError("DB_ERROR", "Error retrieving course from database", http.StatusInternalServerError)
+	} else {
+		err := c.Db.Raw(
+			`SELECT
+				courses.*,
+				categories.category_name,
+				COALESCE(r.ratingavg, 0) as ratingavg
+			FROM
+				courses
+			LEFT JOIN
+				(SELECT course_id, AVG(rating) as ratingavg
+				FROM ratings
+				GROUP BY course_id) as r ON
+				courses.id = r.course_id
+			JOIN
+				categories
+			ON
+				courses.category_id = categories.id
+			WHERE
+				courses.course_name ILIKE ?;`, "%"+filter+"%").Scan(&rawResults).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, customError.NewError("NOT_FOUND", "There is no courses", http.StatusNotFound)
+			}
+			return nil, customError.NewError("DB_ERROR", "Error retrieving course from database", http.StatusInternalServerError)
+		}
 	}
 	for _, data := range rawResults {
 		course := model.Course{
@@ -82,8 +116,10 @@ func (c *CourseClient) GetAll() (model.Courses, error) {
 			},
 			RatingAvg: data["ratingavg"].(float64),
 		}
+		fmt.Println("course: ", course, "/--------------------------------------------------------/")
 		courses = append(courses, course)
 	}
+
 	return courses, nil
 }
 
