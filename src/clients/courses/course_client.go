@@ -116,7 +116,6 @@ func (c *CourseClient) GetAll(filter string) (model.Courses, error) {
 			},
 			RatingAvg: data["ratingavg"].(float64),
 		}
-		fmt.Println("course: ", course, "/--------------------------------------------------------/")
 		courses = append(courses, course)
 	}
 
@@ -126,7 +125,7 @@ func (c *CourseClient) GetAll(filter string) (model.Courses, error) {
 func (c *CourseClient) GetById(id uuid.UUID) (model.Course, error) {
 	var rawResult map[string]interface{}
 	err := c.Db.Raw(
-		`SELECT courses.*, categories.category_name ,r.ratingavg
+		`SELECT courses.*, categories.category_name , COALESCE(r.ratingavg, 0) as ratingavg
 			FROM courses, 
 				(SELECT course_id , AVG(rating) as ratingavg 
 				 FROM ratings GROUP BY course_id) as r, 

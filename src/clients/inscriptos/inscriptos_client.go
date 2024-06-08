@@ -45,10 +45,11 @@ func (c *InscriptosClient) Enroll(inscripto model.Inscripto) (model.Inscripto, e
 func (c *InscriptosClient) GetMyCourses(id uuid.UUID) (model.Courses, error) {
 	var rawResults []map[string]interface{}
 	err := c.Db.Raw(`
-	SELECT C.course_name, C.id as Course_id, C.course_image
+	SELECT C.*, CAT.category_name
 		FROM courses C
 		JOIN inscriptos I ON I.course_id = C.id
 		JOIN users U ON I.user_id = U.id
+		JOIN categories CAT ON C.category_id = CAT.id
 		WHERE I.user_id = ?
 	`, id).Scan(&rawResults).Error
 	if err != nil {
@@ -63,9 +64,19 @@ func (c *InscriptosClient) GetMyCourses(id uuid.UUID) (model.Courses, error) {
 	var courses model.Courses
 	for i := 0; i < len(rawResults); i++ {
 		course := model.Course{
-			CourseName:  rawResults[i]["course_name"].(string),
-			CourseImage: rawResults[i]["course_image"].(string),
-			Id:          parseUUID(rawResults[i]["course_id"]),
+			Id:                parseUUID(rawResults[i]["id"]),
+			CourseName:        rawResults[i]["course_name"].(string),
+			CourseDescription: rawResults[i]["course_description"].(string),
+			CoursePrice:       rawResults[i]["course_price"].(float64),
+			CourseDuration:    int(rawResults[i]["course_duration"].(int64)),
+			CourseInitDate:    rawResults[i]["course_init_date"].(string),
+			CourseState:       rawResults[i]["course_state"].(bool),
+			CourseCapacity:    int(rawResults[i]["course_capacity"].(int64)),
+			CourseImage:       rawResults[i]["course_image"].(string),
+			CategoryID:        parseUUID(rawResults[i]["category_id"]),
+			Category: model.Category{
+				CategoryName: rawResults[i]["category_name"].(string),
+			},
 		}
 		courses = append(courses, course)
 	}

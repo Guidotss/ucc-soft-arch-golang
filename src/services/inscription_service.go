@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/clients/inscriptos"
+	courseDto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/courses"
 	dto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/inscription"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
 	"github.com/google/uuid"
@@ -9,7 +10,7 @@ import (
 
 type IInscriptionService interface {
 	Enroll(dto.EnrollRequestResponseDto) (dto.EnrollRequestResponseDto, error)
-	GetMyCourses(uuid.UUID) (dto.MyCourses, error)
+	GetMyCourses(uuid.UUID) (courseDto.GetAllCourses, error)
 	GetMyStudents(uuid.UUID) (dto.StudentsInCourse, error)
 	IsUserEnrolled(userID uuid.UUID, courseID uuid.UUID) (bool, error)
 	CourseExist(course_id uuid.UUID) (bool, error)
@@ -38,17 +39,25 @@ func (c *inscriptionService) Enroll(data dto.EnrollRequestResponseDto) (dto.Enro
 	}, nil
 }
 
-func (c *inscriptionService) GetMyCourses(id uuid.UUID) (dto.MyCourses, error) {
+func (c *inscriptionService) GetMyCourses(id uuid.UUID) (courseDto.GetAllCourses, error) {
 	response, err := c.client.GetMyCourses(id)
 	if err != nil {
 		return nil, err
 	}
-	var courses dto.MyCourses
+	var courses courseDto.GetAllCourses
 	for _, data := range response {
-		course := dto.MyCourse{
-			Id:          data.Id,
-			CourseName:  data.CourseName,
-			CourseImage: data.CourseImage,
+		course := courseDto.GetCourseDto{
+			Id:                 data.Id,
+			CategoryID:         data.CategoryID,
+			CourseName:         data.CourseName,
+			CourseDescription:  data.CourseDescription,
+			CoursePrice:        data.CoursePrice,
+			CourseDuration:     data.CourseDuration,
+			CourseCapacity:     data.CourseCapacity,
+			CourseInitDate:     data.CourseInitDate,
+			CourseState:        data.CourseState,
+			CourseImage:        data.CourseImage,
+			CourseCategoryName: data.Category.CategoryName,
 		}
 		courses = append(courses, course)
 	}
