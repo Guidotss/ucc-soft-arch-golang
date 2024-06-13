@@ -91,8 +91,11 @@ func (c *CourseClient) GetAll(filter string) (model.Courses, error) {
 			ON
 				courses.category_id = categories.id
 			WHERE
-				courses.course_name ILIKE ?;`, "%"+filter+"%").Scan(&rawResults).Error
+				courses.course_name ILIKE ? OR
+				courses.course_description ILIKE ? OR
+				categories.category_name ILIKE ?`, "%"+filter+"%", "%"+filter+"%", "%"+filter+"%").Scan(&rawResults).Error
 		if err != nil {
+			fmt.Println("error: ", err)
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return nil, customError.NewError("NOT_FOUND", "There is no courses", http.StatusNotFound)
 			}
@@ -125,7 +128,7 @@ func (c *CourseClient) GetAll(filter string) (model.Courses, error) {
 func (c *CourseClient) GetById(id uuid.UUID) (model.Course, error) {
 	var rawResult map[string]interface{}
 	err := c.Db.Raw(
-		`SELECT courses.*, categories.category_name , COALESCE(r.ratingavg, 0) as ratingavg
+		`SELECT courses.*, categories.category_name ,r.ratingavg
 			FROM courses, 
 				(SELECT course_id , AVG(rating) as ratingavg 
 				 FROM ratings GROUP BY course_id) as r, 
