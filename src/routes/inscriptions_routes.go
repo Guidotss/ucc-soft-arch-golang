@@ -24,4 +24,8 @@ func InscriptionsRoutes(g *gin.Engine, controller *controller.InscriptionControl
 	g.GET("/studentsInThisCourse/:cid",
 		isAdmin.AdminAuthMiddleware(),
 		controller.GetMyStudents)
+
+	g.GET("/isEnrolled/:cid",
+		isLogged.AuthMiddleware(),
+		controller.IsAlredyEnrolled)
 }

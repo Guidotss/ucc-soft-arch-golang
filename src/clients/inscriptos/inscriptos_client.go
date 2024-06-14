@@ -121,7 +121,7 @@ func (c *InscriptosClient) IsUserEnrolled(userID uuid.UUID, courseID uuid.UUID) 
 		return false, err
 	}
 	fmt.Println("Enrolled count: ", count)
-	return count == 0, nil
+	return count > 0, nil
 }
 func (c *InscriptosClient) CourseExist(course_id uuid.UUID) (bool, error) {
 	var count int64

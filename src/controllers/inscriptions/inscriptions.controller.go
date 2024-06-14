@@ -21,23 +21,83 @@ func NewInscriptionController(service services.IInscriptionService) *Inscription
 
 func (c *InscriptionController) Create(g *gin.Context) {
 	var enrollDto dto.EnrollRequestResponseDto
-	userID, _ := g.Get("userID")
-	courseID, _ := g.Get("courseID")
-	uid := userID.(uuid.UUID)
-	cid := courseID.(uuid.UUID)
 
+	// Obtener userID y courseID de gin.Context y manejarlos correctamente
+	userID, exists := g.Get("userID")
+	if !exists {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "userID is required"})
+		return
+	}
+
+	courseID, exists := g.Get("courseID")
+	if !exists {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "courseID is required"})
+		return
+	}
+
+	// Verificar y convertir userID a uuid.UUID
+	var uid uuid.UUID
+	switch v := userID.(type) {
+	case string:
+		parsedUID, err := uuid.Parse(v)
+		if err != nil {
+			g.JSON(http.StatusBadRequest, gin.H{"error": "invalid userID format"})
+			return
+		}
+		uid = parsedUID
+	case []byte:
+		parsedUID, err := uuid.ParseBytes(v)
+		if err != nil {
+			g.JSON(http.StatusBadRequest, gin.H{"error": "invalid userID format"})
+			return
+		}
+		uid = parsedUID
+	case uuid.UUID:
+		uid = v
+	default:
+		g.JSON(http.StatusBadRequest, gin.H{"error": "invalid userID format"})
+		return
+	}
+
+	// Verificar y convertir courseID a uuid.UUID
+	var cid uuid.UUID
+	switch v := courseID.(type) {
+	case string:
+		parsedCID, err := uuid.Parse(v)
+		if err != nil {
+			g.JSON(http.StatusBadRequest, gin.H{"error": "invalid courseID format"})
+			return
+		}
+		cid = parsedCID
+	case []byte:
+		parsedCID, err := uuid.ParseBytes(v)
+		if err != nil {
+			g.JSON(http.StatusBadRequest, gin.H{"error": "invalid courseID format"})
+			return
+		}
+		cid = parsedCID
+	case uuid.UUID:
+		cid = v
+	default:
+		g.JSON(http.StatusBadRequest, gin.H{"error": "invalid courseID format"})
+		return
+	}
+
+	// Asignar valores a enrollDto
 	enrollDto.UserId = uid
 	enrollDto.CourseId = cid
 
+	// Llamar al servicio de inscripción
 	response, err := c.InscriptionService.Enroll(enrollDto)
 	if err != nil {
 		g.Error(err)
 		return
 	}
 
-	g.JSON(201, gin.H{
+	// Responder con éxito
+	g.JSON(http.StatusCreated, gin.H{
 		"response": response,
-		"message":  "El usuarios se registro con exito",
+		"message":  "El usuario se registró con éxito",
 	})
 }
 
@@ -70,12 +130,27 @@ func (c *InscriptionController) GetMyStudents(g *gin.Context) {
 	g.JSON(200, response)
 }
 
-// MIDDLEWARE FUNC
-func (c *InscriptionController) IsAlredyEnrolled(user_id uuid.UUID, course_id uuid.UUID) bool {
+func (c *InscriptionController) IsAlredyEnrolled(g *gin.Context) {
+	cid := g.Param("cid")
+	course_id := parseUUID(cid)
+	uid, _ := g.Get("userID")
+	user_id := parseUUID(uid)
 	flag, _ := c.InscriptionService.IsUserEnrolled(user_id, course_id)
-	return flag
+	if flag {
+		g.Error(customError.NewError("USER_ALREADY_ENROLLED", "User is already enrolled", http.StatusBadRequest))
+	}
+	g.JSON(200, gin.H{"message": "User is not enrolled"})
 }
 func (c *InscriptionController) CourseExist(course_id uuid.UUID) bool {
 	flag, _ := c.InscriptionService.CourseExist(course_id)
 	return flag
+}
+
+// FUNCION PARA PARSEAR UUID
+func parseUUID(value interface{}) uuid.UUID {
+	if value != nil {
+		id, _ := uuid.Parse(value.(string))
+		return id
+	}
+	return uuid.Nil
 }
