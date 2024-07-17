@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func UserAdapter(db *gorm.DB) *controllers.UsersController {
+func UserAdapter(db *gorm.DB) (*controllers.UsersController, services.IUserService) {
 	client := users.NewUsersClient(db)
 	service := services.NewUserService(client)
-	return controllers.NewUserController(service)
+	return controllers.NewUserController(service), service
 }

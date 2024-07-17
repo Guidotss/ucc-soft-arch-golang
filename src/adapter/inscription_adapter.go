@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func InscriptionsAdapter(db *gorm.DB) *controllers.InscriptionController {
+func InscriptionsAdapter(db *gorm.DB) (*controllers.InscriptionController, services.IInscriptionService) {
 	client := client.NewInscriptionClient(db)
 	service := services.NewInscriptionService(client)
-	return controllers.NewInscriptionController(service)
+	return controllers.NewInscriptionController(service), service
 }

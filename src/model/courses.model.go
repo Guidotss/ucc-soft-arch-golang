@@ -8,7 +8,7 @@ import (
 type Course struct {
 	gorm.Model
 	Id                uuid.UUID `sql:"type:uuid;primary_key;default:gen_random_uuid()"`
-	CourseName        string    `gorm:"course_name"`
+	CourseName        string    `gorm:"course_name;unique"`
 	CourseDescription string    `gorm:"description"`
 	CoursePrice       float64   `gorm:"price"`
 	CourseDuration    int       `gorm:"duration"`
@@ -17,7 +17,9 @@ type Course struct {
 	CourseCapacity    int       `gorm:"cupo;default:15"`
 	CourseImage       string    `gorm:"image;default:https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"`
 	CategoryID        uuid.UUID
-	Category          Category
+	Category          Category `gorm:"foreignKey:CategoryID"`
+	Ratings           Ratings  `gorm:"foreignKey:CourseId"`
+	RatingAvg         float64  `gorm:"-" json:"ratingavg"`
 }
 
 func (model *Course) BeforeCreate(tx *gorm.DB) (err error) {
