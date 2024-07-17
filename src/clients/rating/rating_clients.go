@@ -22,3 +22,20 @@ func (c *RatingClient) NewRating(rating model.Rating) (model.Rating, error) {
 	}
 	return rating, nil
 }
+func (c *RatingClient) UpdateRating(rating model.Rating) (model.Rating, error) {
+	result := c.Db.Table("ratings").
+		Where("user_id = ? AND course_id = ?", rating.UserId, rating.CourseId).
+		Updates(&rating)
+	if result.Error != nil {
+		return model.Rating{}, customError.NewError("INTERNAL_SERVER_ERROR", "Error updating rating", 500)
+	}
+	return rating, nil
+}
+func (c *RatingClient) GetRatings() (model.Ratings, error) {
+	var ratings model.Ratings
+	result := c.Db.Find(&ratings)
+	if result.Error != nil {
+		return nil, customError.NewError("INTERNAL_SERVER_ERROR", "Error getting ratings", 500)
+	}
+	return ratings, nil
+}

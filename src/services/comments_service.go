@@ -10,6 +10,7 @@ import (
 type ICommentsService interface {
 	NewComment(dto dto.CommentRequestResponseDto) (dto.CommentRequestResponseDto, error)
 	GetCourseComments(courseID uuid.UUID) (dto.GetCommentsResponse, error)
+	UpdateComment(dto dto.CommentRequestResponseDto) (dto.CommentRequestResponseDto, error)
 }
 
 type commentsService struct {
@@ -47,12 +48,28 @@ func (c *commentsService) GetCourseComments(courseID uuid.UUID) (dto.GetComments
 	var allCommentsDto dto.GetCommentsResponse
 	for _, result := range comments {
 		var commentDto dto.CommentResponse
-		commentDto.User.Name = result.UserName
+		commentDto.User_name = result.UserName
 		commentDto.Text = result.Text
-		commentDto.User.Avatar = result.UserAvatar
-		commentDto.User.Id = result.UserId
+		commentDto.User_avatar = result.UserAvatar
+		commentDto.User_id = result.UserId
 		allCommentsDto = append(allCommentsDto, commentDto)
 	}
 	return allCommentsDto, nil
 
+}
+func (c *commentsService) UpdateComment(commentDto dto.CommentRequestResponseDto) (dto.CommentRequestResponseDto, error) {
+	var comment = model.Comment{
+		CourseId: commentDto.CourseId,
+		UserId:   commentDto.UserId,
+		Text:     commentDto.Text,
+	}
+	commentUpdated, err := c.client.UpdateComment(comment)
+	if err != nil {
+		return dto.CommentRequestResponseDto{}, err
+	}
+	return dto.CommentRequestResponseDto{
+		CourseId: commentUpdated.CourseId,
+		UserId:   commentUpdated.UserId,
+		Text:     commentUpdated.Text,
+	}, nil
 }

@@ -48,5 +48,22 @@ func (c *CommentsController) GetCourseComments(g *gin.Context) {
 		g.Error(err)
 		return
 	}
+
 	g.JSON(200, response)
+}
+func (c *CommentsController) UpdateComment(g *gin.Context) {
+	var commentDto dto.CommentRequestResponseDto
+	if err := g.ShouldBindJSON(&commentDto); err != nil {
+		g.Error(customError.NewError("INVALID_INPUTS", "Invalid fields", http.StatusBadRequest))
+		return
+	}
+	response, err := c.CommentsService.UpdateComment(commentDto)
+	if err != nil {
+		g.Error(err)
+		return
+	}
+	g.JSON(200, gin.H{
+		"response": response,
+		"message":  "El comentario se actualizo con exito",
+	})
 }

@@ -13,11 +13,9 @@ type GetCommentRequest struct {
 }
 
 type CommentResponse struct {
-	Text string `json:"text"`
-	User struct {
-		Name   string    `json:"name"`
-		Avatar string    `json:"avatar"`
-		Id     uuid.UUID `json:"id"`
-	}
+	Text        string    `json:"comment"`
+	User_name   string    `json:"user_name"`
+	User_avatar string    `json:"user_avatar"`
+	User_id     uuid.UUID `json:"user_id"`
 }
 type GetCommentsResponse []CommentResponse

@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/clients/courses"
 	dto "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/courses"
 	"github.com/Guidotss/ucc-soft-arch-golang.git/src/model"
@@ -12,6 +14,7 @@ type ICourseService interface {
 	FindAllCourses(filter string) (dto.GetAllCourses, error)
 	FindOneCourse(id uuid.UUID) (dto.GetCourseDto, error)
 	UpdateCourse(dto dto.UpdateRequestDto) (dto.UpdateResponseDto, error)
+	DeleteCourse(id uuid.UUID) error
 }
 
 type courseService struct {
@@ -122,6 +125,9 @@ func (c *courseService) UpdateCourse(newData dto.UpdateRequestDto) (dto.UpdateRe
 	if newData.CourseImage != nil {
 		course.CourseImage = *newData.CourseImage
 	}
+	course.Id = newData.Id
+
+	fmt.Println("UpdateCourse Service: ", course)
 
 	result, err := c.client.UpdateCourse(course)
 	if err != nil {
@@ -139,4 +145,12 @@ func (c *courseService) UpdateCourse(newData dto.UpdateRequestDto) (dto.UpdateRe
 		CourseState:       result.CourseState,
 		CourseImage:       result.CourseImage,
 	}, nil
+}
+
+func (c *courseService) DeleteCourse(id uuid.UUID) error {
+	err := c.client.DeleteCourse(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

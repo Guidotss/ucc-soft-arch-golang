@@ -1,6 +1,7 @@
 package courses
 
 import (
+	"fmt"
 	"net/http"
 
 	coursesDomain "github.com/Guidotss/ucc-soft-arch-golang.git/src/domain/dtos/courses"
@@ -69,14 +70,44 @@ func (c *CourseController) UpdateCourse(g *gin.Context) {
 		g.Error(err)
 		return
 	}
+	course_id, _ := g.Get("courseId")
+	courseDto.Id = parseUUID(course_id)
+	fmt.Println("UpdateCourse Controller: ", courseDto)
 	response, err := c.CourseService.UpdateCourse(courseDto)
 	if err != nil {
 		g.Error(err)
 		return
 	}
-	g.JSON(201, gin.H{
+	g.JSON(200, gin.H{
 		"ok":      true,
 		"message": "Course updated successfully",
 		"data":    response,
 	})
+}
+
+func (c *CourseController) DeleteCourse(g *gin.Context) {
+	id := g.Param("id")
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		g.Error(customError.NewError("INVALID_UUID", "Invalid UUID", http.StatusBadRequest))
+		return
+	}
+	err = c.CourseService.DeleteCourse(uuid)
+	if err != nil {
+		g.Error(err)
+		return
+	}
+	g.JSON(200, gin.H{
+		"ok":      true,
+		"message": "Course deleted successfully",
+	})
+}
+
+// FUNCION PARA PARSEAR UUID
+func parseUUID(value interface{}) uuid.UUID {
+	if value != nil {
+		id, _ := uuid.Parse(value.(string))
+		return id
+	}
+	return uuid.Nil
 }

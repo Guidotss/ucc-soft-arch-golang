@@ -76,6 +76,29 @@ func (c *CommentsClient) GetCourseComments(courseID uuid.UUID) (model.Comments, 
 	return comments, nil
 }
 
+func (c *CommentsClient) UpdateComment(comment model.Comment) (model.Comment, error) {
+	result := c.Db.Table("comments").
+		Where("user_id = ? AND course_id = ?", comment.UserId, comment.CourseId).
+		Updates(&comment)
+	if result.Error != nil {
+		var err error
+		switch {
+		case strings.Contains(result.Error.Error(), "connection"):
+			err = customError.NewError(
+				"DB_CONNECTION_ERROR",
+				"Database connection error. Please try again later.",
+				http.StatusInternalServerError)
+		default:
+			err = customError.NewError(
+				"UNEXPECTED_ERROR",
+				"An unexpected error occurred. Please try again later.",
+				http.StatusInternalServerError)
+		}
+		return model.Comment{}, err
+	}
+	return comment, nil
+}
+
 // FUNCION PARA PARSEAR UUID
 func parseUUID(value interface{}) uuid.UUID {
 	if value != nil {

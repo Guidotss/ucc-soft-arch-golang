@@ -60,13 +60,15 @@ func (c *CourseClient) GetAll(filter string) (model.Courses, error) {
     		courses
 		LEFT JOIN 
     		(SELECT course_id, AVG(rating) as ratingavg 
-		FROM ratings 
+		FROM ratings
     	GROUP BY course_id) as r ON 
     		courses.id = r.course_id
 		JOIN 
     		categories 
 		ON 
-    		courses.category_id = categories.id;`).Scan(&rawResults).Error
+    		courses.category_id = categories.id
+		WHERE 				
+			courses.deleted_at IS NULL;`).Scan(&rawResults).Error
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return nil, customError.NewError("NOT_FOUND", "There is no courses", http.StatusNotFound)
@@ -91,6 +93,7 @@ func (c *CourseClient) GetAll(filter string) (model.Courses, error) {
 			ON
 				courses.category_id = categories.id
 			WHERE
+				courses.deleted_at IS NULL AND
 				courses.course_name ILIKE ? OR
 				courses.course_description ILIKE ? OR
 				categories.category_name ILIKE ?`, "%"+filter+"%", "%"+filter+"%", "%"+filter+"%").Scan(&rawResults).Error
@@ -135,6 +138,7 @@ func (c *CourseClient) GetById(id uuid.UUID) (model.Course, error) {
 				categories
 			WHERE 
 				courses.id = r.course_id AND 
+				courses.deleted_at IS NULL AND
 				courses.category_id = categories.id AND
 				courses.id = ?`, id).Scan(&rawResult).Error
 	fmt.Println("rawresult: ", rawResult)
@@ -188,6 +192,27 @@ func (c *CourseClient) UpdateCourse(course model.Course) (model.Course, error) {
 		return model.Course{}, err
 	}
 	return course, nil
+}
+
+func (c *CourseClient) DeleteCourse(id uuid.UUID) error {
+	result := c.Db.Where("id = ?", id).Delete(&model.Course{})
+	if result.Error != nil {
+		var err error
+		switch {
+		case strings.Contains(result.Error.Error(), "connection"):
+			err = customError.NewError(
+				"DB_CONNECTION_ERROR",
+				"Database connection error. Please try again later.",
+				http.StatusInternalServerError)
+		default:
+			err = customError.NewError(
+				"UNEXPECTED_ERROR",
+				"An unexpected error occurred. Please try again later.",
+				http.StatusInternalServerError)
+		}
+		return err
+	}
+	return nil
 }
 
 // FUNCION PARA PARSEAR UUID

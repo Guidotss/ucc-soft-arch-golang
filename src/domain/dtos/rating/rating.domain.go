@@ -17,3 +17,4 @@ type GetCourseRatingResponseDto struct {
 	Rating   int       `json:"rating"`
 }
 type CourseRatingsDto []GetCourseRatingResponseDto
+type RatingsResponse []RatingRequestResponseDto
